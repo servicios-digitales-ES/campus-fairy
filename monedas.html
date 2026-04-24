@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Monedas — Fairy Agency</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Verificación instantánea -->
+<script>
+(function() {
+  var access = localStorage.getItem("fairyAccess");
+  var time   = localStorage.getItem("fairyTime");
+  var DURACION = 3 * 60 * 60 * 1000;
+  if (!access || !time || (Date.now() - parseInt(time) > DURACION)) {
+    localStorage.clear();
+    window.location.replace("zona-streamer.html");
+  }
+})();
+</script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #eaeaea;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ── LOGIN MODAL ── */
+#passwordModal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.98);
+  display: none; align-items: center; justify-content: center; z-index: 4000;
+}
+.modal-content {
+  background: #111; padding: 40px 30px; border-radius: 20px;
+  text-align: center; max-width: 340px; width: 95%; border: 1px solid #222;
+}
+.modal-content img { width: 160px; margin-bottom: 20px; filter: brightness(1.15); }
+.modal-content h2  { color: #ffd700; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal-content p   { color: #888; font-size: 13px; margin-bottom: 4px; }
+#passInput {
+  width: 100%; padding: 14px; background: #222; border: 1px solid #333;
+  border-radius: 10px; color: white; margin: 12px 0 6px;
+  text-align: center; font-size: 15px; font-family: 'Inter', sans-serif; letter-spacing: 1px;
+}
+#passInput:focus { outline: none; border-color: #ffd700; }
+.btn-entrar {
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  color: black; padding: 13px; border: none; border-radius: 10px;
+  font-weight: 700; cursor: pointer; font-size: 15px;
+  width: 100%; font-family: 'Inter', sans-serif; margin-top: 6px;
+}
+.btn-entrar:active { opacity: 0.85; }
+#loginError { display: none; color: #ff4d4d; font-size: 13px; margin: 8px 0 4px; }
+#btnContactoModal {
+  display: none; width: 100%; margin-top: 10px; padding: 11px;
+  background: transparent; border: 1px solid #25d366; border-radius: 10px;
+  color: #25d366; font-size: 13px; font-weight: 600;
+  text-decoration: none; text-align: center; font-family: 'Inter', sans-serif;
+}
+#btnContactoModal:hover { background: rgba(37,211,102,0.08); }
+
+/* ── MAIN ── */
+#mainContent { display: none; height: 100vh; width: 100vw; }
+
+/* ── HEADER ── */
+.header {
+  display: flex; align-items: center; gap: 12px;
+  position: absolute; top: 25px; left: 20px; z-index: 2001;
+}
+.menu-btn { font-size: 24px; color: #ffd700; cursor: pointer; }
+.logo { width: 85px; filter: brightness(1.15); }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100%;
+  background: #111; padding: 90px 18px 20px;
+  transform: translateX(-100%); transition: 0.3s ease; z-index: 3000;
+  overflow-y: auto; box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+}
+.sidebar.active { transform: translateX(0); }
+.logo-menu { width: 140px; display: block; margin: 0 auto 30px; filter: brightness(1.15); }
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  color: #eaeaea; margin-bottom: 4px; font-size: 14px;
+}
+.menu-item:hover { background: #222; }
+.menu-left { display: flex; align-items: center; gap: 10px; }
+.menu-left i { color: #ffd700; width: 16px; text-align: center; }
+.salsa-s { color: #ffd700; font-weight: bold; width: 16px; text-align: center; }
+.submenu { max-height: 0; overflow: hidden; transition: 0.3s ease; padding-left: 32px; }
+.submenu a { display: block; padding: 8px 0; color: #aaa; text-decoration: none; font-size: 13px; }
+.submenu a:hover { color: #ffd700; }
+.menu-separator { border: none; border-top: 1px solid #222; margin: 8px 0; }
+.menu-item-wa {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; font-size: 14px;
+  color: #25d366; margin-bottom: 4px; text-decoration: none; cursor: pointer;
+}
+.menu-item-wa:hover { background: rgba(37,211,102,0.08); }
+.menu-item-wa i { color: #25d366; width: 16px; text-align: center; }
+.overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 2500;
+}
+.overlay.active { opacity: 1; visibility: visible; }
+
+/* ── TABS ── */
+.tabs {
+  display: flex; justify-content: center; gap: 20px; padding-top: 80px;
+  padding-left: 10px; padding-right: 10px; flex-wrap: wrap;
+}
+.tab {
+  cursor: pointer; padding-bottom: 8px; font-size: 15px;
+  color: #555; transition: 0.3s; font-weight: bold;
+}
+.tab.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
+
+/* ── SLIDER (tab 1) ── */
+.slider-container {
+  height: calc(100vh - 140px); width: 100vw;
+  position: relative; margin-top: 12px; overflow: hidden;
+}
+.slides { display: flex; transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1); height: 100%; }
+.slide {
+  min-width: 100vw; width: 100vw; height: 100%;
+  display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+}
+
+/* ── CARD ESTÁNDAR ── */
+.card-impact {
+  background: #111; color: #eaeaea; padding: 30px 26px;
+  border-radius: 22px; text-align: center; width: 88%; max-width: 400px;
+  min-height: 68vh; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  border: 1px solid #222; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; gap: 14px;
+  overflow-y: auto;
+}
+.card-impact h3 {
+  font-size: 17px; color: #ffd700; font-weight: 700;
+  padding-bottom: 14px; border-bottom: 1px solid #222; line-height: 1.4;
+}
+.card-impact p { font-size: 13px; line-height: 1.75; color: #ccc; margin: 0; }
+
+/* ── CARD IMG ── */
+.card-img {
+  background: #111; border: 1px solid #222; border-radius: 22px;
+  width: 88%; max-width: 380px; min-height: 68vh;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  gap: 14px; padding: 24px 20px; box-sizing: border-box;
+}
+.card-img img {
+  width: 100%; border-radius: 12px; border: 1px solid #222;
+  object-fit: contain; max-height: 45vh;
+}
+.card-img p { font-size: 13px; line-height: 1.6; color: #ccc; text-align: center; margin: 0; }
+
+/* ── BOTONES CTA ── */
+.btn-gold {
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  border: none; border-radius: 12px; padding: 10px 20px;
+  color: #000; font-size: 13px; font-weight: bold; cursor: pointer;
+  width: 100%; text-align: center; font-family: 'Inter', sans-serif;
+  text-decoration: none; display: block;
+  animation: glowPulse 2s infinite;
+}
+.btn-gold:active { opacity: 0.85; }
+
+.btn-red {
+  background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d;
+  padding: 10px 20px; border-radius: 12px; font-size: 13px; font-weight: bold;
+  cursor: pointer; width: 100%; text-align: center; font-family: 'Inter', sans-serif;
+}
+.btn-red:active { background: rgba(255,77,77,0.1); }
+
+.btn-row { display: flex; gap: 8px; width: 100%; flex-wrap: wrap; }
+.btn-row .btn-gold { flex: 1; }
+
+@keyframes glowPulse {
+  0%   { box-shadow: 0 0 5px rgba(255,215,0,0.3); }
+  50%  { box-shadow: 0 0 18px rgba(255,215,0,0.6), 0 0 8px rgba(255,165,0,0.3); }
+  100% { box-shadow: 0 0 5px rgba(255,215,0,0.3); }
+}
+
+/* ── FLECHAS ── */
+.arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 22px; color: #ffd700; background: rgba(0,0,0,0.85);
+  width: 55px; height: 55px; display: flex; align-items: center;
+  justify-content: center; border-radius: 50%; cursor: pointer;
+  z-index: 100; border: 1px solid #ffd700;
+  -webkit-tap-highlight-color: transparent;
+  opacity: 0.18;
+  transition: opacity 0.4s ease;
+  animation: arrowBlink 0.35s ease 3;
+}
+.arrow.active-hint {
+  animation: arrowBlink 0.35s ease 3;
+  opacity: 0.18;
+}
+.arrow:active { background: rgba(255,215,0,0.15); opacity: 1 !important; }
+.arrow.left  { left: 10px; }
+.arrow.right { right: 10px; }
+
+@keyframes arrowBlink {
+  0%   { opacity: 0.18; }
+  50%  { opacity: 1; }
+  100% { opacity: 0.18; }
+}
+.contador {
+  position: absolute; bottom: 16px; width: 100%;
+  text-align: center; font-size: 13px; font-weight: bold;
+  color: #ffd700; letter-spacing: 2px; z-index: 10; pointer-events: none;
+}
+
+/* ── TABLA (mismo estilo match-salsa) ── */
+.bono-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.bono-table th {
+  color: #ffd700; border-bottom: 2px solid #333;
+  padding: 8px 4px; font-size: 10px; text-transform: uppercase; text-align: center;
+}
+.bono-table td {
+  padding: 10px 4px; border-bottom: 1px solid #222;
+  font-weight: bold; font-size: 12px; color: #ccc; text-align: center;
+}
+.bono-table tr:last-child td { border-bottom: none; }
+
+/* ── RETO FAIRY ── */
+#section-reto {
+  display: none;
+  height: calc(100vh - 140px);
+  overflow-y: auto;
+  padding: 16px 16px 40px;
+}
+
+.reto-intro {
+  background: #111; border: 1px solid #222; border-radius: 16px;
+  padding: 20px; font-size: 13px; line-height: 1.75; color: #ccc;
+  margin-bottom: 20px;
+}
+.reto-intro strong { color: #ffd700; }
+
+/* GRID DE ETAPAS */
+.etapas-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-bottom: 20px;
+}
+.etapa-card {
+  background: #111; border: 1px solid #333; border-radius: 14px;
+  padding: 18px 10px; text-align: center; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.etapa-card:hover  { border-color: #ffd700; }
+.etapa-card.active { border-color: #ffd700; background: #1a1600; }
+.etapa-card h4 { color: #ffd700; font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.etapa-card p  { color: #666; font-size: 11px; }
+
+/* DETALLE ETAPA */
+.etapa-detalle { display: none; }
+.etapa-detalle.active { display: block; }
+
+/* SUBTABS versión */
+.version-tabs {
+  display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap;
+}
+.vtab {
+  padding: 8px 14px; border-radius: 22px; background: #1a1a1a;
+  cursor: pointer; font-size: 12px; color: #888; border: 1px solid #333;
+  font-family: 'Inter', sans-serif;
+}
+.vtab.active { background: #ffd700; color: #000; font-weight: bold; border-color: #ffd700; }
+
+/* BLOQUES SEMANALES */
+.semanas-bloque { display: none; }
+.semanas-bloque.active { display: block; }
+
+.bloque-header {
+  font-size: 11px; font-weight: 700; color: #ffd700;
+  text-transform: uppercase; letter-spacing: 2px;
+  margin: 16px 0 8px; padding-bottom: 6px;
+  border-bottom: 1px solid #222;
+}
+
+.tabla-wrap {
+  background: #111; border: 1px solid #222; border-radius: 14px;
+  padding: 14px 10px; margin-bottom: 14px; overflow-x: auto;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ════════════════ LOGIN MODAL ════════════════ -->
+<div id="passwordModal">
+  <div class="modal-content">
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" alt="logo" loading="lazy" decoding="async">
+    <h2>Zona Privada</h2>
+    <p>Ingresa tu ID para continuar</p>
+    <input type="text" id="passInput" placeholder="Tu ID de acceso"
+           onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="loginError">ID incorrecto. Verifica tu número de identificación.</div>
+    <button onclick="checkPassword()" class="btn-entrar">Entrar</button>
+    <a id="btnContactoModal" href="https://wa.me/50370482075" target="_blank">
+      <i class="fa-brands fa-whatsapp"></i> Tengo problemas para ingresar
+    </a>
+  </div>
+</div>
+
+<!-- ════════════════ MAIN CONTENT ════════════════ -->
+<div id="mainContent">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" class="logo" loading="lazy" decoding="async">
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" class="logo-menu" loading="lazy" decoding="async">
+    <a href="https://wa.me/50370482075" target="_blank" class="menu-item-wa">
+      <i class="fa-brands fa-whatsapp"></i> Contactar Agencia
+    </a>
+    <hr class="menu-separator">
+    <div class="menu-item" onclick="toggleSub('inicio')">
+      <div class="menu-left"><i class="fa-solid fa-house"></i>Inicio</div>▼
+    </div>
+    <div class="submenu" id="inicio">
+      <a href="zona-streamer.html">Zona Streamer</a>
+      <a href="fairy-academy.html">Fairy Academy</a>
+      <a href="salsa.html">SALSA</a>
+      <a href="reportes-salsa.html">Reportes</a>
+      <a href="binance-streamer.html">Binance</a>
+      <a href="noticias.html">Noticias</a>
+      <a href="reglamento-interno.html">Reglamento</a>
+    </div>
+    <div class="menu-item" onclick="toggleSub('fairy')">
+      <div class="menu-left"><i class="fa-solid fa-graduation-cap"></i>Fairy Academy</div>▼
+    </div>
+    <div class="submenu" id="fairy">
+      <a href="capacitaciones.html">Capacitaciones</a>
+      <a href="tutoriales.html">Tutoriales</a>
+      <a href="tips-fairy.html">Tips Fairy</a>
+    </div>
+    <div class="menu-item" onclick="toggleSub('salsa')">
+      <div class="menu-left"><span class="salsa-s">S</span>SALSA</div>▼
+    </div>
+    <div class="submenu" id="salsa">
+      <a href="capacitaciones-salsa.html">Capacitaciones</a>
+      <a href="tutoriales-salsa.html">Tutoriales</a>
+      <a href="reglas-salsa.html">Reglas SALSA</a>
+      <a href="herramientas-salsa.html">Herramientas</a>
+    </div>
+    <hr class="menu-separator">
+    <div class="menu-item" onclick="logout()" style="color:#ff4d4d; margin-top:4px;">
+      <div class="menu-left"><i class="fa-solid fa-right-from-bracket"></i>Salir</div>
+    </div>
+  </div>
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" id="t-monedas" onclick="showTab('monedas')">¿Qué son las monedas?</div>
+    <div class="tab"        id="t-reto"    onclick="showTab('reto')">Reto Fairy</div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB 1 — MONEDAS (18 slides)
+  ══════════════════════════════════════ -->
+  <div id="section-monedas">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="mover(-1)">❮</div>
+      <div class="arrow right" onclick="mover(1)">❯</div>
+      <div class="slides" id="slidesMonedas">
+
+        <!-- SLIDE 1 -->
+        <div class="slide"><div class="card-impact">
+          <h3>¿Qué son las monedas?</h3>
+          <p>Cada <strong style="color:#ffd700">650 monedas</strong> equivalen a <strong style="color:#ffd700">1 dólar</strong>.<br><br>
+          Esto significa que tus ingresos dependen directamente de la cantidad de monedas que generes.<br><br>
+          <strong style="color:#ffd700">Más monedas = más dinero.</strong></p>
+        </div></div>
+
+        <!-- SLIDE 2 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Cómo calcular tu meta</h3>
+          <p>Si tienes una meta de <strong style="color:#ffd700">100 dólares a la semana</strong>, debes multiplicar:<br><br>
+          <strong style="color:#ffd700">100 × 650 = 65,000 monedas</strong><br><br>
+          Esa es tu meta semanal.</p>
+        </div></div>
+
+        <!-- SLIDE 3 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Calcula tu propia meta</h3>
+          <p>Es simple: <strong style="color:#ffd700">la cantidad de dinero que quieras obtener a la semana</strong>, multiplícala por <strong style="color:#ffd700">650</strong>.<br><br>
+          Ese resultado es tu meta en monedas dentro de la app.<br><br>
+          Puedes hacer este mismo cálculo para metas diarias, semanales o mensuales. <strong style="color:#ffd700">Siempre trabaja con una meta clara.</strong></p>
+        </div></div>
+
+        <!-- SLIDE 4 -->
+        <div class="slide"><div class="card-impact">
+          <h3>¿Cómo ganas monedas?</h3>
+          <p>Existen varias formas de generar monedas dentro de la app. Aprende cómo funciona cada una:</p>
+          <div style="display:flex; flex-direction:column; gap:10px; margin-top:4px;">
+            <a href="lives-salsa.html" class="btn-gold">Zona Live</a>
+            <a href="match-salsa.html" class="btn-gold">Zona Match</a>
+            <a href="videollamadas-salsa.html" class="btn-gold">Videollamadas</a>
+          </div>
+        </div></div>
+
+        <!-- SLIDE 5 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Videollamadas — la fuente principal</h3>
+          <p>Una de las formas más importantes de generar monedas es a través de videollamadas.<br><br>
+          <strong style="color:#ffd700">Cada videollamada se paga por minuto.</strong><br><br>
+          Mientras más tiempo el usuario permanezca en llamada, más monedas generas.</p>
+        </div></div>
+
+        <!-- SLIDE 6 -->
+        <div class="slide"><div class="card-impact">
+          <h3>El objetivo real de la llamada</h3>
+          <p>El objetivo no es solo llamar.<br><br>
+          Es <strong style="color:#ffd700">lograr que el usuario quiera quedarse</strong> en la llamada.<br><br>
+          Esto se logra con buena conversación, conexión, actitud e interacción.</p>
+        </div></div>
+
+        <!-- SLIDE 7 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Regalos en videollamada</h3>
+          <p>Cuando el usuario disfruta la llamada, es más probable que se quede más tiempo y <strong style="color:#ffd700">envíe regalos</strong>.<br><br>
+          Siempre agradece los regalos para reforzar ese comportamiento.</p>
+        </div></div>
+
+        <!-- SLIDE 8 — Catálogo de regalos -->
+        <div class="slide"><div class="card-img">
+          <p>Estos son algunos de los regalos más usados dentro de la app. Te sirven como referencia para entender <strong style="color:#ffd700">cuánto estás ganando por cada regalo que recibes</strong>.</p>
+          <img src="https://i.postimg.cc/CKQTVhM2/Tabla-de-regalos.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Cuidado con los regalos falsos</h3>
+          <p>Algunos usuarios simulan regalos con mensajes o emojis. <strong style="color:#ff4d4d">Esto no es real.</strong><br><br>
+          Los regalos verdaderos:<br>
+          · En videollamadas y live tienen <strong style="color:#ffd700">animación y sonido</strong><br>
+          · En chat tienen una forma visual específica dentro de la app<br><br>
+          Para aprender a identificarlos mejor:</p>
+          <a href="advertencias-salsa.html" class="btn-gold">Ver sección de advertencias</a>
+        </div></div>
+
+        <!-- SLIDE 9 -->
+        <div class="slide"><div class="card-img">
+          <p>¿Dónde ver tus monedas? En tu <strong style="color:#ffd700">Centro Streamer</strong> dentro de la app.</p>
+          <img src="https://i.postimg.cc/Kzt9DVzV/7-1.png" loading="lazy" decoding="async">
+          <a href="centro-streamer.html" class="btn-gold">Ver Centro Streamer</a>
+        </div></div>
+
+        <!-- SLIDE 10 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Control de tus ingresos</h3>
+          <p>Ahí podrás ver tu total de monedas y su <strong style="color:#ffd700">conversión a dólares</strong>.<br><br>
+          Esto te permite llevar control de tus ingresos en tiempo real.</p>
+        </div></div>
+
+        <!-- SLIDE 11 -->
+        <div class="slide"><div class="card-impact">
+          <h3>¿Cómo asegurar tu generación?</h3>
+          <p><strong style="color:#ffd700">Primero:</strong> aprende a usar Salsa al 100%<br><br>
+          <strong style="color:#ffd700">Segundo:</strong> aprende a usar el algoritmo a tu favor</p>
+          <a href="videollamadas-salsa.html" class="btn-gold">Entender el algoritmo</a>
+        </div></div>
+
+        <!-- SLIDE 12 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Mantén tu visibilidad activa</h3>
+          <p>Para mantener visibilidad dentro de la app, necesitas generar monedas constantemente.<br><br>
+          Recomendación: mantente al menos en <strong style="color:#ffd700">nivel C semanal</strong>.</p>
+        </div></div>
+
+        <!-- SLIDE 13 -->
+        <div class="slide"><div class="card-img">
+          <p>Usa el <strong style="color:#ffd700">Reto Fairy</strong> como base para avanzar progresivamente hacia los niveles más altos.</p>
+          <img src="https://i.postimg.cc/fkQkcBn1/Nivel-Requerido-(3).png" loading="lazy" decoding="async" style="max-height:38vh;">
+        </div></div>
+
+        <!-- SLIDE 14 -->
+        <div class="slide"><div class="card-img">
+          <p>¿Cómo llevar control semanal? Entra a la <strong style="color:#ffd700">tabla de líderes</strong> en "Esta semana".</p>
+          <img src="https://i.postimg.cc/5yTxLvGq/10-2-esta-semana.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <!-- SLIDE 15 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Compara tu rendimiento</h3>
+          <p>Ahí podrás ver tu foto y la cantidad de monedas generadas en la semana.<br><br>
+          Esto te permite <strong style="color:#ffd700">comparar tu rendimiento</strong> y saber exactamente dónde estás.</p>
+        </div></div>
+
+        <!-- SLIDE 16 -->
+        <div class="slide"><div class="card-impact">
+          <h3>La importancia del primer día</h3>
+          <p>El primer día <strong style="color:#ffd700">influye directamente en tu algoritmo</strong>.<br><br>
+          La aplicación te da visibilidad inicial para impulsarte.<br><br>
+          No la desperdicies.</p>
+        </div></div>
+
+        <!-- SLIDE 17 -->
+        <div class="slide"><div class="card-impact">
+          <h3>Usuarios automáticos en Match</h3>
+          <p>Durante la Zona Match pueden aparecer <strong style="color:#ffd700">usuarios automáticos</strong> que llaman, se quedan en llamada y envían regalos.<br><br>
+          Esto ayuda a aumentar tu visibilidad inicial.</p>
+        </div></div>
+
+        <!-- SLIDE 18 -->
+        <div class="slide"><div class="card-impact">
+          <h3>El primer día: mínimo 120 Match</h3>
+          <p>Por eso es importante que el primer día <strong style="color:#ff4d4d">no ignores los Match</strong> y realices al menos <strong style="color:#ffd700">120</strong>.<br><br>
+          Esto impacta directamente tu crecimiento inicial y tu posicionamiento en el algoritmo.</p>
+        </div></div>
+
+      </div><!-- /slides -->
+      <div class="contador" id="contadorMonedas">1 / 18</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB 2 — RETO FAIRY
+  ══════════════════════════════════════ -->
+  <div id="section-reto">
+
+    <!-- VISTA GRID (intro + etapas centradas) -->
+    <div id="retoGrid" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 140px); padding:16px; gap:20px;">
+
+      <div class="reto-intro" style="max-width:420px; width:100%;">
+        El <strong>Reto Fairy</strong> es una guía de crecimiento progresivo. Te indica cuántas monedas debes generar cada día y cada semana. No es un límite, es el <strong>mínimo recomendado</strong> para crecer dentro de la app. Puedes generar más si lo deseas. Elige la opción que mejor se adapte a tu tiempo: trabajar 7 días, descansar 1 día o descansar 2 días. La constancia es más importante que la intensidad. <strong>Comienza con la Etapa 1.</strong>
+      </div>
+
+      <div class="etapas-grid" style="max-width:420px; width:100%; margin-bottom:0;">
+        <div class="etapa-card" id="card-e1" onclick="abrirEtapa(1)">
+          <h4>Etapa 1</h4><p>Base</p>
+        </div>
+        <div class="etapa-card" id="card-e2" onclick="abrirEtapa(2)">
+          <h4>Etapa 2</h4><p>Estabilidad</p>
+        </div>
+        <div class="etapa-card" id="card-e3" onclick="abrirEtapa(3)">
+          <h4>Etapa 3</h4><p>Consolidación</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- VISTA DETALLE (se muestra al abrir etapa) -->
+    <div id="retoDetalle" style="display:none; padding:16px 16px 40px; overflow-y:auto; max-height:calc(100vh - 140px);">
+
+      <!-- Header dinámico por etapa -->
+      <div id="etapaHeader" style="background:#111; border:1px solid #222; border-radius:14px; padding:16px 18px; margin-bottom:16px;">
+        <p id="etapaTitulo" style="color:#ffd700; font-weight:700; font-size:15px; margin-bottom:4px;"></p>
+        <p id="etapaDesc"   style="color:#aaa; font-size:13px; line-height:1.6;"></p>
+      </div>
+
+    <!-- DETALLE ETAPA 1 -->
+    <div class="etapa-detalle" id="detalle-e1">
+      <div class="version-tabs">
+        <div class="vtab active" id="v1-7" onclick="verVersion(1,7)">7 días</div>
+        <div class="vtab"        id="v1-6" onclick="verVersion(1,6)">Descansar 1 día</div>
+        <div class="vtab"        id="v1-5" onclick="verVersion(1,5)">Descansar 2 días</div>
+      </div>
+      <!-- V 7 días -->
+      <div class="semanas-bloque active" id="e1v7">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>2,800</td><td>$4.31</td><td>19,500</td><td>$30.00</td></tr>
+          <tr><td>2</td><td>5,600</td><td>$8.62</td><td>39,000</td><td>$60.00</td></tr>
+          <tr><td>3</td><td>8,400</td><td>$12.92</td><td>58,500</td><td>$90.00</td></tr>
+          <tr><td>4</td><td>11,100</td><td>$17.08</td><td>78,000</td><td>$120.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>13,900</td><td>$21.38</td><td>97,500</td><td>$150.00</td></tr>
+          <tr><td>6</td><td>18,100</td><td>$27.85</td><td>116,000</td><td>$178.46</td></tr>
+          <tr><td>7</td><td>22,100</td><td>$34.00</td><td>155,000</td><td>$238.46</td></tr>
+          <tr><td>8</td><td>25,100</td><td>$38.62</td><td>175,000</td><td>$269.23</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>30,600</td><td>$47.08</td><td>214,000</td><td>$329.23</td></tr>
+          <tr><td>10</td><td>31,900</td><td>$49.08</td><td>224,000</td><td>$344.62</td></tr>
+          <tr><td>11</td><td>32,900</td><td>$50.62</td><td>229,000</td><td>$352.31</td></tr>
+          <tr><td>12</td><td>33,400</td><td>$51.38</td><td>234,000</td><td>$360.00</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 6 días -->
+      <div class="semanas-bloque" id="e1v6">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>3,250</td><td>$5.00</td><td>19,500</td><td>$30.00</td></tr>
+          <tr><td>2</td><td>6,500</td><td>$10.00</td><td>39,000</td><td>$60.00</td></tr>
+          <tr><td>3</td><td>9,750</td><td>$15.00</td><td>58,500</td><td>$90.00</td></tr>
+          <tr><td>4</td><td>13,000</td><td>$20.00</td><td>78,000</td><td>$120.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>16,250</td><td>$25.00</td><td>97,500</td><td>$150.00</td></tr>
+          <tr><td>6</td><td>19,333</td><td>$29.74</td><td>116,000</td><td>$178.46</td></tr>
+          <tr><td>7</td><td>25,833</td><td>$39.74</td><td>155,000</td><td>$238.46</td></tr>
+          <tr><td>8</td><td>29,167</td><td>$44.87</td><td>175,000</td><td>$269.23</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>35,667</td><td>$54.87</td><td>214,000</td><td>$329.23</td></tr>
+          <tr><td>10</td><td>37,333</td><td>$57.44</td><td>224,000</td><td>$344.62</td></tr>
+          <tr><td>11</td><td>38,167</td><td>$58.72</td><td>229,000</td><td>$352.31</td></tr>
+          <tr><td>12</td><td>39,000</td><td>$60.00</td><td>234,000</td><td>$360.00</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 5 días -->
+      <div class="semanas-bloque" id="e1v5">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>3,900</td><td>$6.00</td><td>19,500</td><td>$30.00</td></tr>
+          <tr><td>2</td><td>7,800</td><td>$12.00</td><td>39,000</td><td>$60.00</td></tr>
+          <tr><td>3</td><td>11,700</td><td>$18.00</td><td>58,500</td><td>$90.00</td></tr>
+          <tr><td>4</td><td>15,600</td><td>$24.00</td><td>78,000</td><td>$120.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>19,500</td><td>$30.00</td><td>97,500</td><td>$150.00</td></tr>
+          <tr><td>6</td><td>23,200</td><td>$35.69</td><td>116,000</td><td>$178.46</td></tr>
+          <tr><td>7</td><td>31,000</td><td>$47.69</td><td>155,000</td><td>$238.46</td></tr>
+          <tr><td>8</td><td>35,000</td><td>$53.85</td><td>175,000</td><td>$269.23</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>42,800</td><td>$65.85</td><td>214,000</td><td>$329.23</td></tr>
+          <tr><td>10</td><td>44,800</td><td>$68.92</td><td>224,000</td><td>$344.62</td></tr>
+          <tr><td>11</td><td>45,800</td><td>$70.46</td><td>229,000</td><td>$352.31</td></tr>
+          <tr><td>12</td><td>46,800</td><td>$72.00</td><td>234,000</td><td>$360.00</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+    </div>
+
+    <!-- DETALLE ETAPA 2 -->
+    <div class="etapa-detalle" id="detalle-e2">
+      <div class="version-tabs">
+        <div class="vtab active" id="v2-7" onclick="verVersion(2,7)">7 días</div>
+        <div class="vtab"        id="v2-6" onclick="verVersion(2,6)">Descansar 1 día</div>
+        <div class="vtab"        id="v2-5" onclick="verVersion(2,5)">Descansar 2 días</div>
+      </div>
+      <!-- V 7 días -->
+      <div class="semanas-bloque active" id="e2v7">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>33,600</td><td>$51.69</td><td>235,000</td><td>$361.54</td></tr>
+          <tr><td>2</td><td>36,400</td><td>$56.00</td><td>255,000</td><td>$392.31</td></tr>
+          <tr><td>3</td><td>39,300</td><td>$60.46</td><td>275,000</td><td>$423.08</td></tr>
+          <tr><td>4</td><td>42,100</td><td>$64.77</td><td>295,000</td><td>$453.85</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>45,000</td><td>$69.23</td><td>315,000</td><td>$484.62</td></tr>
+          <tr><td>6</td><td>48,600</td><td>$74.77</td><td>340,000</td><td>$523.08</td></tr>
+          <tr><td>7</td><td>52,100</td><td>$80.15</td><td>365,000</td><td>$561.54</td></tr>
+          <tr><td>8</td><td>55,700</td><td>$85.69</td><td>390,000</td><td>$600.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>59,300</td><td>$91.23</td><td>415,000</td><td>$638.46</td></tr>
+          <tr><td>10</td><td>62,900</td><td>$96.77</td><td>440,000</td><td>$676.92</td></tr>
+          <tr><td>11</td><td>65,000</td><td>$100.00</td><td>455,000</td><td>$700.00</td></tr>
+          <tr><td>12</td><td>67,100</td><td>$103.23</td><td>470,000</td><td>$723.08</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 6 días -->
+      <div class="semanas-bloque" id="e2v6">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>39,167</td><td>$60.26</td><td>235,000</td><td>$361.54</td></tr>
+          <tr><td>2</td><td>42,500</td><td>$65.38</td><td>255,000</td><td>$392.31</td></tr>
+          <tr><td>3</td><td>45,833</td><td>$70.51</td><td>275,000</td><td>$423.08</td></tr>
+          <tr><td>4</td><td>49,167</td><td>$75.64</td><td>295,000</td><td>$453.85</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>52,500</td><td>$80.77</td><td>315,000</td><td>$484.62</td></tr>
+          <tr><td>6</td><td>56,667</td><td>$87.18</td><td>340,000</td><td>$523.08</td></tr>
+          <tr><td>7</td><td>60,833</td><td>$93.59</td><td>365,000</td><td>$561.54</td></tr>
+          <tr><td>8</td><td>65,000</td><td>$100.00</td><td>390,000</td><td>$600.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>69,167</td><td>$106.41</td><td>415,000</td><td>$638.46</td></tr>
+          <tr><td>10</td><td>73,333</td><td>$112.82</td><td>440,000</td><td>$676.92</td></tr>
+          <tr><td>11</td><td>75,833</td><td>$116.67</td><td>455,000</td><td>$700.00</td></tr>
+          <tr><td>12</td><td>78,333</td><td>$120.51</td><td>470,000</td><td>$723.08</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 5 días -->
+      <div class="semanas-bloque" id="e2v5">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>47,000</td><td>$72.31</td><td>235,000</td><td>$361.54</td></tr>
+          <tr><td>2</td><td>51,000</td><td>$78.46</td><td>255,000</td><td>$392.31</td></tr>
+          <tr><td>3</td><td>55,000</td><td>$84.62</td><td>275,000</td><td>$423.08</td></tr>
+          <tr><td>4</td><td>59,000</td><td>$90.77</td><td>295,000</td><td>$453.85</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>63,000</td><td>$96.92</td><td>315,000</td><td>$484.62</td></tr>
+          <tr><td>6</td><td>68,000</td><td>$104.62</td><td>340,000</td><td>$523.08</td></tr>
+          <tr><td>7</td><td>73,000</td><td>$112.31</td><td>365,000</td><td>$561.54</td></tr>
+          <tr><td>8</td><td>78,000</td><td>$120.00</td><td>390,000</td><td>$600.00</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>83,000</td><td>$127.69</td><td>415,000</td><td>$638.46</td></tr>
+          <tr><td>10</td><td>88,000</td><td>$135.38</td><td>440,000</td><td>$676.92</td></tr>
+          <tr><td>11</td><td>91,000</td><td>$140.00</td><td>455,000</td><td>$700.00</td></tr>
+          <tr><td>12</td><td>94,000</td><td>$144.62</td><td>470,000</td><td>$723.08</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+    </div>
+
+    <!-- DETALLE ETAPA 3 -->
+    <div class="etapa-detalle" id="detalle-e3">
+      <div class="version-tabs">
+        <div class="vtab active" id="v3-7" onclick="verVersion(3,7)">7 días</div>
+        <div class="vtab"        id="v3-6" onclick="verVersion(3,6)">Descansar 1 día</div>
+        <div class="vtab"        id="v3-5" onclick="verVersion(3,5)">Descansar 2 días</div>
+      </div>
+      <!-- V 7 días -->
+      <div class="semanas-bloque active" id="e3v7">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>70,000</td><td>$107.69</td><td>490,000</td><td>$753.85</td></tr>
+          <tr><td>2</td><td>74,000</td><td>$113.85</td><td>520,000</td><td>$800.00</td></tr>
+          <tr><td>3</td><td>78,600</td><td>$120.92</td><td>550,000</td><td>$846.15</td></tr>
+          <tr><td>4</td><td>83,000</td><td>$127.69</td><td>580,000</td><td>$892.31</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>87,100</td><td>$134.00</td><td>610,000</td><td>$938.46</td></tr>
+          <tr><td>6</td><td>91,400</td><td>$140.62</td><td>640,000</td><td>$984.62</td></tr>
+          <tr><td>7</td><td>97,100</td><td>$149.38</td><td>680,000</td><td>$1,046.15</td></tr>
+          <tr><td>8</td><td>103,000</td><td>$158.46</td><td>720,000</td><td>$1,107.69</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>111,400</td><td>$171.38</td><td>780,000</td><td>$1,200.00</td></tr>
+          <tr><td>10</td><td>120,000</td><td>$184.62</td><td>840,000</td><td>$1,292.31</td></tr>
+          <tr><td>11</td><td>128,600</td><td>$197.85</td><td>900,000</td><td>$1,384.62</td></tr>
+          <tr><td>12</td><td>134,300</td><td>$206.62</td><td>940,000</td><td>$1,446.15</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 6 días -->
+      <div class="semanas-bloque" id="e3v6">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>81,667</td><td>$125.64</td><td>490,000</td><td>$753.85</td></tr>
+          <tr><td>2</td><td>86,667</td><td>$133.33</td><td>520,000</td><td>$800.00</td></tr>
+          <tr><td>3</td><td>91,667</td><td>$141.03</td><td>550,000</td><td>$846.15</td></tr>
+          <tr><td>4</td><td>96,667</td><td>$148.72</td><td>580,000</td><td>$892.31</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>101,667</td><td>$156.41</td><td>610,000</td><td>$938.46</td></tr>
+          <tr><td>6</td><td>106,667</td><td>$164.10</td><td>640,000</td><td>$984.62</td></tr>
+          <tr><td>7</td><td>113,333</td><td>$174.36</td><td>680,000</td><td>$1,046.15</td></tr>
+          <tr><td>8</td><td>120,000</td><td>$184.62</td><td>720,000</td><td>$1,107.69</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>130,000</td><td>$200.00</td><td>780,000</td><td>$1,200.00</td></tr>
+          <tr><td>10</td><td>140,000</td><td>$215.38</td><td>840,000</td><td>$1,292.31</td></tr>
+          <tr><td>11</td><td>150,000</td><td>$230.77</td><td>900,000</td><td>$1,384.62</td></tr>
+          <tr><td>12</td><td>156,667</td><td>$241.03</td><td>940,000</td><td>$1,446.15</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+      <!-- V 5 días -->
+      <div class="semanas-bloque" id="e3v5">
+        <p class="bloque-header">Semanas 1 – 4</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>1</td><td>98,000</td><td>$150.77</td><td>490,000</td><td>$753.85</td></tr>
+          <tr><td>2</td><td>104,000</td><td>$160.00</td><td>520,000</td><td>$800.00</td></tr>
+          <tr><td>3</td><td>110,000</td><td>$169.23</td><td>550,000</td><td>$846.15</td></tr>
+          <tr><td>4</td><td>116,000</td><td>$178.46</td><td>580,000</td><td>$892.31</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 5 – 8</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>5</td><td>122,000</td><td>$187.69</td><td>610,000</td><td>$938.46</td></tr>
+          <tr><td>6</td><td>128,000</td><td>$196.92</td><td>640,000</td><td>$984.62</td></tr>
+          <tr><td>7</td><td>136,000</td><td>$209.23</td><td>680,000</td><td>$1,046.15</td></tr>
+          <tr><td>8</td><td>144,000</td><td>$221.54</td><td>720,000</td><td>$1,107.69</td></tr>
+        </tbody></table></div>
+        <p class="bloque-header">Semanas 9 – 12</p>
+        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
+          <tr><td>9</td><td>156,000</td><td>$240.00</td><td>780,000</td><td>$1,200.00</td></tr>
+          <tr><td>10</td><td>168,000</td><td>$258.46</td><td>840,000</td><td>$1,292.31</td></tr>
+          <tr><td>11</td><td>180,000</td><td>$276.92</td><td>900,000</td><td>$1,384.62</td></tr>
+          <tr><td>12</td><td>188,000</td><td>$289.23</td><td>940,000</td><td>$1,446.15</td></tr>
+        </tbody></table></div>
+        <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
+      </div>
+    </div>
+
+    </div><!-- /retoDetalle -->
+
+  </div><!-- /section-reto -->
+
+</div><!-- /mainContent -->
+
+<!-- ════════════════ SCRIPTS ════════════════ -->
+<script src="ids.js"></script>
+<script>
+const DURACION = 3 * 60 * 60 * 1000;
+
+function checkPassword() {
+  const input   = document.getElementById('passInput').value.trim();
+  const usuario = USUARIOS.find(u => u.id === input);
+  if (usuario) {
+    localStorage.setItem("fairyAccess", "true");
+    localStorage.setItem("fairyTime",   Date.now());
+    localStorage.setItem("fairyNombre", `Hola ${usuario.nombre} ${usuario.apellido} 👋`);
+    document.getElementById("loginError").style.display       = "none";
+    document.getElementById("btnContactoModal").style.display = "none";
+    window.location.href = "zona-streamer.html";
+  } else {
+    document.getElementById("loginError").style.display       = "block";
+    document.getElementById("btnContactoModal").style.display = "block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("passwordModal").style.display = "none";
+  document.getElementById("mainContent").style.display   = "block";
+  actualizarContador();
+});
+
+function logout() { localStorage.clear(); window.location.href = "zona-streamer.html"; }
+
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+function toggleSub(id) {
+  const el = document.getElementById(id);
+  el.style.maxHeight = el.style.maxHeight ? null : el.scrollHeight + "px";
+}
+
+// ── TABS ──
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('t-' + tab).classList.add('active');
+  document.getElementById('section-monedas').style.display = tab === 'monedas' ? 'block' : 'none';
+  document.getElementById('section-reto').style.display    = tab === 'reto'    ? 'block' : 'none';
+}
+
+// ── SLIDER MONEDAS ──
+const TOTAL = 19;
+let idx = 0;
+
+function mover(dir) {
+  const next = idx + dir;
+  if (next < 0 || next >= TOTAL) return;
+  idx = next;
+  document.getElementById('slidesMonedas').style.transform = `translateX(-${idx * 100}vw)`;
+  actualizarContador();
+  parpadearFlechas();
+}
+
+function actualizarContador() {
+  document.getElementById('contadorMonedas').textContent = `${idx + 1} / ${TOTAL}`;
+}
+
+function parpadearFlechas() {
+  document.querySelectorAll('.arrow').forEach(a => {
+    a.classList.remove('active-hint');
+    void a.offsetWidth; // force reflow
+    a.classList.add('active-hint');
+  });
+}
+
+// Touch swipe
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.changedTouches[0].clientX; }, { passive: true });
+document.addEventListener('touchend',   e => {
+  const d = tx - e.changedTouches[0].clientX;
+  if (Math.abs(d) > 50) mover(d > 0 ? 1 : -1);
+}, { passive: true });
+
+// Teclado
+document.addEventListener('keydown', e => {
+  if (document.getElementById('section-monedas').style.display !== 'none') {
+    if (e.key === 'ArrowRight') mover(1);
+    if (e.key === 'ArrowLeft')  mover(-1);
+  }
+});
+
+// ── RETO FAIRY ──
+const ETAPA_INFO = {
+  1: { titulo: 'Etapa 1 — Base',           desc: 'Las primeras 12 semanas del Reto Fairy. El enfoque es construir constancia y establecer una base sólida de ingresos.' },
+  2: { titulo: 'Etapa 2 — Estabilidad',    desc: 'Las siguientes 12 semanas. El objetivo es estabilidad y aumento sostenido del rendimiento.' },
+  3: { titulo: 'Etapa 3 — Consolidación',  desc: 'Las últimas 12 semanas. Orientada a la consolidación y altos niveles de desempeño.' }
+};
+
+let etapaActiva = 0;
+
+function abrirEtapa(n) {
+  etapaActiva = n;
+  document.getElementById('retoGrid').style.display    = 'none';
+  document.getElementById('retoDetalle').style.display = 'block';
+  document.getElementById('etapaTitulo').textContent   = ETAPA_INFO[n].titulo;
+  document.getElementById('etapaDesc').textContent     = ETAPA_INFO[n].desc;
+  document.querySelectorAll('.etapa-detalle').forEach(d => d.classList.remove('active'));
+  document.getElementById('detalle-e' + n).classList.add('active');
+  document.getElementById('retoDetalle').scrollTop = 0;
+}
+
+function cerrarEtapa() {
+  etapaActiva = 0;
+  document.querySelectorAll('.etapa-detalle').forEach(d => d.classList.remove('active'));
+  document.getElementById('retoDetalle').style.display = 'none';
+  document.getElementById('retoGrid').style.display    = 'flex';
+}
+
+function verVersion(etapa, dias) {
+  const prefijo = `e${etapa}v${dias}`;
+  // Ocultar todos los bloques de esta etapa
+  [7,6,5].forEach(d => {
+    const bl = document.getElementById(`e${etapa}v${d}`);
+    if (bl) bl.classList.remove('active');
+    const vt = document.getElementById(`v${etapa}-${d}`);
+    if (vt) vt.classList.remove('active');
+  });
+  document.getElementById(prefijo).classList.add('active');
+  document.getElementById(`v${etapa}-${dias}`).classList.add('active');
+}
+
+</script>
+
+</body>
+</html>
