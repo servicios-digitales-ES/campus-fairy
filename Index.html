@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fairy Agency — Campus</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #eaeaea;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ══════════════════════════════════════
+   SLIDER PRINCIPAL
+══════════════════════════════════════ */
+.slider-container {
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.slides-track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.slide {
+  min-width: 100vw;
+  width: 100vw;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 20px;
+}
+
+/* ══════════════════════════════════════
+   CARD — mismo estándar del campus
+══════════════════════════════════════ */
+.card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 25px;
+  width: 88%;
+  max-width: 420px;
+  min-height: 70vh;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  padding: 45px 30px;
+  text-align: center;
+}
+
+.slide-number {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.card-icon {
+  font-size: 36px;
+  color: #ffd700;
+}
+
+.card-text {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #ccc;
+}
+
+.card-text strong {
+  color: #ffd700;
+  font-weight: 700;
+}
+
+.divider {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   CARD FINAL (slide 10)
+══════════════════════════════════════ */
+.card-final {
+  gap: 18px;
+}
+
+.logo-final {
+  width: 120px;
+  filter: brightness(1.15);
+  margin-bottom: 4px;
+}
+
+.btn-campus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  color: #000;
+  padding: 15px 24px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 15px;
+  text-decoration: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  width: 100%;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  animation: glowPulse 2s infinite;
+}
+.btn-campus:hover  { opacity: 0.9; transform: scale(1.02); }
+.btn-campus:active { opacity: 0.85; transform: scale(0.98); }
+
+@keyframes glowPulse {
+  0%   { box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+  50%  { box-shadow: 0 0 20px rgba(255,215,0,0.7), 0 0 8px rgba(255,165,0,0.4); }
+  100% { box-shadow: 0 0 6px rgba(255,215,0,0.4); }
+}
+
+.link-copy {
+  font-size: 11px;
+  color: #555;
+  line-height: 1.6;
+  text-align: center;
+}
+.link-copy a {
+  color: #ffd700;
+  text-decoration: none;
+  word-break: break-all;
+  font-size: 11px;
+}
+.link-copy a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   FLECHAS — mismo estilo campus
+══════════════════════════════════════ */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 55px;
+  height: 55px;
+  font-size: 22px;
+  color: #ffd700;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 100;
+  border: 1px solid #ffd700;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 0.2s;
+}
+.arrow:active { background: rgba(255,215,0,0.15); }
+.arrow.left  { left: 10px; }
+.arrow.right { right: 10px; }
+
+/* ══════════════════════════════════════
+   CONTADOR
+══════════════════════════════════════ */
+.contador {
+  position: absolute;
+  bottom: 22px;
+  width: 100%;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffd700;
+  letter-spacing: 2px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════
+   LOGO HEADER
+══════════════════════════════════════ */
+.header-logo {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  pointer-events: none;
+}
+.header-logo img {
+  width: 70px;
+  filter: brightness(1.15);
+  opacity: 0.85;
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGO FIJO ARRIBA -->
+<div class="header-logo">
+  <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" alt="Fairy Agency" loading="lazy" decoding="async">
+</div>
+
+<!-- SLIDER -->
+<div class="slider-container">
+
+  <div class="arrow left"  id="btnPrev" onclick="mover(-1)">❮</div>
+  <div class="arrow right" id="btnNext" onclick="mover(1)">❯</div>
+
+  <div class="slides-track" id="slidesTrack">
+
+    <!-- SLIDE 1 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">01 / 10</span>
+        <i class="fa-solid fa-circle-info card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Nadie llega sabiendo a esta industria. <strong>Todas empiezan desde cero.</strong><br><br>
+          La diferencia entre las que generan dinero y las que no es simple: unas siguen el sistema y otras no.<br><br>
+          Este campus existe para enseñarte exactamente eso: cómo generar dinero dentro de la aplicación.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">02 / 10</span>
+        <i class="fa-solid fa-book-open card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Aquí no hay teoría vacía. Aprenderás cómo funciona todo dentro de Salsa: la aplicación, las monedas, el algoritmo, las videollamadas, la zona Live, la zona Match y el bono Match.<br><br>
+          <strong>Si quieres resultados, este campus no es opcional. Es la base de todo.</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">03 / 10</span>
+        <i class="fa-solid fa-clipboard-list card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          <strong>Esto no es un curso libre, es un sistema de trabajo.</strong><br><br>
+          Debes enviar tu reporte diario, seguir las indicaciones del coaching y mantener actividad constante.<br><br>
+          Nosotras damos seguimiento a todas, pero si tú no haces tu parte, no podemos ayudarte.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">04 / 10</span>
+        <i class="fa-solid fa-route card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Para empezar correctamente: primero lee el reglamento interno, luego entra a Salsa en "Nuevo empieza", explora la aplicación y usa el campus como guía mientras avanzas.<br><br>
+          <strong>No necesitas aprender todo en un solo día.</strong> El campus está para que vuelvas a él las veces que necesites.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">05 / 10</span>
+        <i class="fa-solid fa-bolt card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          <strong>Debes empezar a trabajar desde el día 1.</strong><br><br>
+          La aplicación le da prioridad a las cuentas nuevas, lo que significa más visibilidad y más oportunidades.<br><br>
+          Si no aprovechas ese momento, pierdes una ventaja que no vuelve.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">06 / 10</span>
+        <i class="fa-solid fa-chart-line card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Tus resultados no cambian en uno o dos días. <strong>Esto es un proceso progresivo.</strong><br><br>
+          Las streamers que siguen el sistema correctamente mejoran semana a semana.<br><br>
+          Aquí no hay magia, hay constancia.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">07 / 10</span>
+        <i class="fa-solid fa-trophy card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Dentro del campus encontrarás el <strong>Reto Fairy</strong>.<br><br>
+          Este reto te da metas diarias de monedas que aumentan cada semana, pero hay algo clave: <strong>la meta es el mínimo, no el límite.</strong><br><br>
+          Puedes generar más si decides esforzarte más. Más monedas significan más dinero.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">08 / 10</span>
+        <i class="fa-solid fa-seedling card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          Empiezas pequeño. <strong>La primera semana es totalmente alcanzable</strong> y está pensada para que entiendas el ritmo del sistema.<br><br>
+          Solo necesitas constancia, no perfección.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide">
+      <div class="card">
+        <span class="slide-number">09 / 10</span>
+        <i class="fa-solid fa-triangle-exclamation card-icon"></i>
+        <div class="divider"></div>
+        <p class="card-text">
+          <strong>Si ejecutas, vas a crecer.</strong><br><br>
+          Si no ejecutas, no es que el sistema no funcione, es que no aplicaste lo necesario. Muchas veces cuando alguien no obtiene resultados, termina culpando a la aplicación o a la agencia, cuando en realidad no siguió el proceso completo.<br><br>
+          Si en algún momento decides no continuar, es importante que lo informes a la agencia. Trabajamos con <strong>cupos limitados por coach</strong>, y al avisar permites que otra persona que sí quiere trabajar pueda tomar ese espacio.
+        </p>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 — FINAL -->
+    <div class="slide">
+      <div class="card card-final">
+        <span class="slide-number">10 / 10</span>
+        <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" class="logo-final" loading="lazy" decoding="async">
+        <div class="divider"></div>
+        <p class="card-text">
+          Bienvenida a nuestra agencia. Aquí tienes acceso a tu campus de aprendizaje, creado especialmente para ti.<br><br>
+          Aprovéchalo al 100% y entra cada vez que lo necesites. Para ingresar, solo debes pegar tu <strong>ID de Salsa</strong>.<br><br>
+          Si la sesión se cierra es completamente normal, ocurre cuando no hay actividad. Puedes volver a ingresar sin problema en cualquier momento.
+        </p>
+        <a href="https://servicios-digitales-ES.github.io/campus-fairy/zona-streamer.html"
+           class="btn-campus" target="_self">
+          <i class="fa-solid fa-door-open"></i>
+          Ingresar al campus
+        </a>
+        <p class="link-copy">
+          También puedes copiar y guardar este enlace:<br>
+          <a href="https://servicios-digitales-ES.github.io/campus-fairy/zona-streamer.html">
+            servicios-digitales-ES.github.io/campus-fairy/zona-streamer.html
+          </a>
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /slides-track -->
+
+  <div class="contador" id="contador">1 / 10</div>
+
+</div><!-- /slider-container -->
+
+
+<script>
+const TOTAL = 10;
+let index    = 0;
+let animando = false;
+
+// Touch / swipe
+let touchStartX = 0;
+
+document.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].clientX;
+}, { passive: true });
+
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) {
+    mover(diff > 0 ? 1 : -1);
+  }
+}, { passive: true });
+
+// Teclado
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') mover(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   mover(-1);
+});
+
+function mover(dir) {
+  if (animando) return;
+  const next = index + dir;
+  if (next < 0 || next >= TOTAL) return;
+  animando = true;
+  index = next;
+  document.getElementById('slidesTrack').style.transform = `translateX(-${index * 100}vw)`;
+  document.getElementById('contador').textContent = `${index + 1} / ${TOTAL}`;
+
+  // Ocultar flechas en extremos
+  document.getElementById('btnPrev').style.opacity = index === 0 ? '0.2' : '1';
+  document.getElementById('btnNext').style.opacity = index === TOTAL - 1 ? '0.2' : '1';
+
+  setTimeout(() => { animando = false; }, 550);
+}
+
+// Estado inicial flechas
+document.getElementById('btnPrev').style.opacity = '0.2';
+</script>
+
+</body>
+          </html>
+          
