@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfil SALSA — Fairy Agency</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- Verificación instantánea — corre antes de renderizar -->
+<script>
+(function() {
+  var access = localStorage.getItem("fairyAccess");
+  var time   = localStorage.getItem("fairyTime");
+  var DURACION = 3 * 60 * 60 * 1000;
+  if (!access || !time || (Date.now() - parseInt(time) > DURACION)) {
+    localStorage.clear();
+    window.location.replace("zona-streamer.html");
+  }
+})();
+</script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a0a;
+  color: #eaeaea;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* ══════════════════════════════════════
+   LOGIN MODAL
+══════════════════════════════════════ */
+#passwordModal {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.98);
+  display: none; align-items: center; justify-content: center;
+  z-index: 4000;
+}
+.modal-content {
+  background: #111; padding: 40px 30px; border-radius: 20px;
+  text-align: center; max-width: 340px; width: 95%; border: 1px solid #222;
+}
+.modal-content img { width: 160px; margin-bottom: 20px; filter: brightness(1.15); }
+.modal-content h2  { color: #ffd700; font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal-content p   { color: #888; font-size: 13px; margin-bottom: 4px; }
+#passInput {
+  width: 100%; padding: 14px; background: #222; border: 1px solid #333;
+  border-radius: 10px; color: white; margin: 12px 0 6px;
+  text-align: center; font-size: 15px; font-family: 'Inter', sans-serif; letter-spacing: 1px;
+}
+#passInput:focus { outline: none; border-color: #ffd700; }
+.btn-entrar {
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  color: black; padding: 13px; border: none; border-radius: 10px;
+  font-weight: 700; cursor: pointer; font-size: 15px;
+  width: 100%; font-family: 'Inter', sans-serif; margin-top: 6px;
+}
+.btn-entrar:active { opacity: 0.85; }
+#loginError { display: none; color: #ff4d4d; font-size: 13px; margin: 8px 0 4px; }
+#btnContactoModal {
+  display: none; width: 100%; margin-top: 10px; padding: 11px;
+  background: transparent; border: 1px solid #25d366; border-radius: 10px;
+  color: #25d366; font-size: 13px; font-weight: 600;
+  text-decoration: none; text-align: center; font-family: 'Inter', sans-serif;
+}
+#btnContactoModal:hover { background: rgba(37,211,102,0.08); }
+
+/* ══════════════════════════════════════
+   MAIN CONTENT
+══════════════════════════════════════ */
+#mainContent { display: none; height: 100vh; width: 100vw; }
+
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
+.header {
+  display: flex; align-items: center; gap: 12px;
+  position: absolute; top: 25px; left: 20px; z-index: 2001;
+}
+.menu-btn { font-size: 24px; color: #ffd700; cursor: pointer; }
+.logo { width: 85px; filter: brightness(1.15); }
+
+/* ══════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════ */
+.sidebar {
+  position: fixed; top: 0; left: 0; width: 260px; height: 100%;
+  background: #111; padding: 90px 18px 20px;
+  transform: translateX(-100%); transition: 0.3s ease; z-index: 3000;
+  overflow-y: auto; box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+}
+.sidebar.active { transform: translateX(0); }
+.logo-menu { width: 140px; display: block; margin: 0 auto 30px; filter: brightness(1.15); }
+.menu-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  color: #eaeaea; margin-bottom: 4px; font-size: 14px;
+}
+.menu-item:hover { background: #222; }
+.menu-left { display: flex; align-items: center; gap: 10px; }
+.menu-left i { color: #ffd700; width: 16px; text-align: center; }
+.salsa-s { color: #ffd700; font-weight: bold; width: 16px; text-align: center; }
+.submenu { max-height: 0; overflow: hidden; transition: 0.3s ease; padding-left: 32px; }
+.submenu a { display: block; padding: 8px 0; color: #aaa; text-decoration: none; font-size: 13px; }
+.submenu a:hover { color: #ffd700; }
+.menu-separator { border: none; border-top: 1px solid #222; margin: 8px 0; }
+.menu-item-wa {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 10px; font-size: 14px;
+  color: #25d366; margin-bottom: 4px; text-decoration: none; cursor: pointer;
+}
+.menu-item-wa:hover { background: rgba(37,211,102,0.08); }
+.menu-item-wa i { color: #25d366; width: 16px; text-align: center; }
+
+/* ══════════════════════════════════════
+   OVERLAY
+══════════════════════════════════════ */
+.overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7); opacity: 0; visibility: hidden;
+  transition: 0.3s; z-index: 2500;
+}
+.overlay.active { opacity: 1; visibility: visible; }
+
+/* ══════════════════════════════════════
+   TABS / SUBTABS
+══════════════════════════════════════ */
+.tabs {
+  display: flex; justify-content: center; gap: 20px; padding-top: 100px;
+  flex-wrap: wrap; padding-left: 10px; padding-right: 10px;
+}
+.tab {
+  cursor: pointer; padding-bottom: 8px; font-size: 16px;
+  color: #555; transition: 0.3s; font-weight: bold;
+}
+.tab.active { color: #ffd700; border-bottom: 3px solid #ffd700; }
+
+.subtabs {
+  display: flex; justify-content: center; gap: 10px; margin-top: 16px;
+  flex-wrap: wrap; padding: 0 10px;
+}
+.subtab {
+  padding: 8px 16px; border-radius: 25px; background: #1a1a1a;
+  cursor: pointer; font-size: 13px; color: #888; border: 1px solid #333;
+  font-family: 'Inter', sans-serif;
+}
+.subtab.active { background: #ffd700; color: #000; font-weight: bold; border-color: #ffd700; }
+
+/* ══════════════════════════════════════
+   SLIDER
+══════════════════════════════════════ */
+.slider-container {
+  height: calc(100vh - 220px); width: 100vw;
+  position: relative; margin-top: 10px; overflow: hidden;
+}
+.slides { display: flex; transition: 0.5s cubic-bezier(0.25, 1, 0.5, 1); height: 100%; }
+.slide {
+  min-width: 100vw; width: 100vw; height: 100%;
+  display: flex; justify-content: center; align-items: center; flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════
+   CARD ESTÁNDAR
+══════════════════════════════════════ */
+.card-impact {
+  background: #111; color: #eaeaea; padding: 35px 30px;
+  border-radius: 25px; text-align: center; width: 88%; max-width: 400px;
+  min-height: 70vh; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  border: 1px solid #222; box-sizing: border-box;
+  display: flex; flex-direction: column; justify-content: center; gap: 16px;
+  overflow-y: auto;
+}
+.card-impact h3 {
+  font-size: 18px; color: #ffd700; font-weight: 700;
+  padding-bottom: 16px; border-bottom: 1px solid #222;
+  letter-spacing: 0.5px; line-height: 1.4;
+}
+.card-impact p {
+  font-size: 14px; line-height: 1.7; color: #ccc; margin: 0;
+}
+
+/* ══════════════════════════════════════
+   CARD IMAGEN + TEXTO (perfil gestión)
+══════════════════════════════════════ */
+.card-img-text {
+  background: #111; border: 1px solid #222; border-radius: 20px;
+  width: 88%; max-width: 380px; min-height: 70vh;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  gap: 14px; padding: 24px 20px; box-sizing: border-box;
+}
+.card-img-text img {
+  width: 100%; border-radius: 14px; border: 1px solid #222;
+  object-fit: contain; max-height: 55vh;
+}
+.card-img-text p {
+  font-size: 13px; line-height: 1.6; color: #ccc;
+  text-align: center; margin: 0;
+}
+
+/* ══════════════════════════════════════
+   CARD DESCRIPCIÓN (cajas copiables)
+══════════════════════════════════════ */
+.card-desc {
+  background: #111; border: 1px solid #222; border-radius: 20px;
+  width: 88%; max-width: 400px; min-height: 70vh;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 14px; padding: 28px 22px; box-sizing: border-box;
+  overflow-y: auto;
+}
+.card-desc h4 {
+  font-size: 16px; color: #ffd700; font-weight: 700;
+  padding-bottom: 12px; border-bottom: 1px solid #222;
+}
+.card-desc .desc-intro {
+  font-size: 13px; color: #aaa; line-height: 1.5;
+}
+.copy-box {
+  background: #1a1a1a; border: 1px solid #333; border-radius: 12px;
+  padding: 12px 14px; display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 10px; cursor: pointer;
+  transition: border-color 0.2s;
+}
+.copy-box:hover { border-color: #ffd700; }
+.copy-box span {
+  font-size: 13px; color: #ddd; line-height: 1.5; flex: 1;
+}
+.copy-box .copy-icon {
+  color: #ffd700; font-size: 14px; flex-shrink: 0; margin-top: 2px;
+}
+.copy-toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: #ffd700; color: #000; padding: 8px 20px;
+  border-radius: 20px; font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  z-index: 9999;
+}
+.copy-toast.show { opacity: 1; }
+
+/* ══════════════════════════════════════
+   AUTOPLAY CARRUSEL (consejos foto)
+══════════════════════════════════════ */
+.autoplay-indicator {
+  display: flex; justify-content: center; gap: 6px; margin-top: 8px;
+}
+.autoplay-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #333; transition: background 0.3s;
+}
+.autoplay-dot.active { background: #ffd700; }
+
+/* ══════════════════════════════════════
+   FLECHAS
+══════════════════════════════════════ */
+.arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 24px; color: #ffd700; background: rgba(0,0,0,0.85);
+  width: 55px; height: 55px; display: flex; align-items: center;
+  justify-content: center; border-radius: 50%; cursor: pointer;
+  z-index: 100; border: 1px solid #ffd700;
+  -webkit-tap-highlight-color: transparent;
+}
+.arrow.left  { left: 10px; }
+.arrow.right { right: 10px; }
+
+/* CONTADOR */
+.contador {
+  position: absolute; bottom: 16px; width: 100%;
+  text-align: center; font-size: 13px; font-weight: bold;
+  color: #ffd700; letter-spacing: 2px; z-index: 10;
+}
+
+/* Slide final mensaje */
+.msg-final {
+  font-size: 15px; color: #ffd700; font-weight: 700;
+  font-style: italic; text-align: center; line-height: 1.6;
+  padding: 0 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════
+     ❌ NO TOCAR — INICIO LOGIN MODAL
+════════════════════════════════════════════ -->
+<div id="passwordModal">
+  <div class="modal-content">
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" alt="logo" loading="lazy" decoding="async">
+    <h2>Zona Privada</h2>
+    <p>Ingresa tu ID para continuar</p>
+    <input type="text" id="passInput" placeholder="Tu ID de acceso"
+           onkeydown="if(event.key==='Enter') checkPassword()">
+    <div id="loginError">ID incorrecto. Verifica tu número de identificación.</div>
+    <button onclick="checkPassword()" class="btn-entrar">Entrar</button>
+    <a id="btnContactoModal" href="https://wa.me/50370482075" target="_blank">
+      <i class="fa-brands fa-whatsapp"></i> Tengo problemas para ingresar
+    </a>
+  </div>
+</div>
+<!-- ════════════════════════════════════════════
+     ❌ NO TOCAR — FIN LOGIN MODAL
+════════════════════════════════════════════ -->
+
+
+<!-- ════════════════════════════════════════════
+     ✅ EDITABLE — INICIO CONTENIDO PRINCIPAL
+════════════════════════════════════════════ -->
+<div id="mainContent">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="menu-btn" onclick="toggleMenu()"><i class="fa-solid fa-bars"></i></div>
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" class="logo" loading="lazy" decoding="async">
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" class="logo-menu" loading="lazy" decoding="async">
+    <a href="https://wa.me/50370482075" target="_blank" class="menu-item-wa">
+      <i class="fa-brands fa-whatsapp"></i> Contactar Agencia
+    </a>
+    <hr class="menu-separator">
+    <div class="menu-item" onclick="toggleSub('inicio')">
+      <div class="menu-left"><i class="fa-solid fa-house"></i>Inicio</div>▼
+    </div>
+    <div class="submenu" id="inicio">
+      <a href="zona-streamer.html">Zona Streamer</a>
+      <a href="fairy-academy.html">Fairy Academy</a>
+      <a href="salsa.html">SALSA</a>
+      <a href="reportes-salsa.html">Reportes</a>
+      <a href="binance-streamer.html">Binance</a>
+      <a href="noticias.html">Noticias</a>
+      <a href="reglamento-interno.html">Reglamento</a>
+    </div>
+    <div class="menu-item" onclick="toggleSub('fairy')">
+      <div class="menu-left"><i class="fa-solid fa-graduation-cap"></i>Fairy Academy</div>▼
+    </div>
+    <div class="submenu" id="fairy">
+      <a href="capacitaciones.html">Capacitaciones</a>
+      <a href="tutoriales.html">Tutoriales</a>
+      <a href="tips-fairy.html">Tips Fairy</a>
+    </div>
+    <div class="menu-item" onclick="toggleSub('salsa')">
+      <div class="menu-left"><span class="salsa-s">S</span>SALSA</div>▼
+    </div>
+    <div class="submenu" id="salsa">
+      <a href="capacitaciones-salsa.html">Capacitaciones</a>
+      <a href="tutoriales-salsa.html">Tutoriales</a>
+      <a href="reglas-salsa.html">Reglas SALSA</a>
+      <a href="herramientas-salsa.html">Herramientas</a>
+    </div>
+    <hr class="menu-separator">
+    <div class="menu-item" onclick="logout()" style="color:#ff4d4d; margin-top:4px;">
+      <div class="menu-left"><i class="fa-solid fa-right-from-bracket"></i>Salir</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+  <!-- ═══ TABS ═══ -->
+  <div class="tabs">
+    <div class="tab active" id="t-gestion"  onclick="showTab('gestion')">Gestión de perfil</div>
+    <div class="tab"        id="t-fotos"    onclick="showTab('fotos')">Fotografías</div>
+    <div class="tab"        id="t-descs"    onclick="showTab('descs')">Descripciones</div>
+  </div>
+
+  <!-- SUBTABS FOTOS -->
+  <div class="subtabs" id="subtabs-fotos" style="display:none;">
+    <div class="subtab active" id="st-consejos"    onclick="showSubFotos('consejos')">Consejos</div>
+    <div class="subtab"        id="st-incorrectas" onclick="showSubFotos('incorrectas')">Incorrectas</div>
+    <div class="subtab"        id="st-correctas"   onclick="showSubFotos('correctas')">Correctas</div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: GESTIÓN DE PERFIL
+  ══════════════════════════════════════ -->
+  <div id="section-gestion" class="content-area">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="moveSlider('gestion', -1)">❮</div>
+      <div class="arrow right" onclick="moveSlider('gestion',  1)">❯</div>
+      <div class="slides" id="slides-gestion">
+
+        <div class="slide"><div class="card-img-text">
+          <p>Este es tu panel de perfil, desde aquí puedes gestionar toda tu información y contenido</p>
+          <img src="https://i.postimg.cc/3JXFwHqb/1-panel-del-perfil.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Aquí puedes ver a las personas que sigues</p>
+          <img src="https://i.postimg.cc/kXQv5dHH/2-las-personas-a-las-que-sigues.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Este número muestra cuántas personas siguen tu perfil</p>
+          <img src="https://i.postimg.cc/vZGLgNRh/3-el-total-de-tus-seguidores.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Aquí puedes ver el total de tus publicaciones</p>
+          <img src="https://i.postimg.cc/rwqC0P6J/4-el-total-de-tus-publicaciones.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Tu foto de perfil es lo primero que verán los usuarios</p>
+          <img src="https://i.postimg.cc/zGqSbcmd/5-tu-foto-de-perfil-actual.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Agrega fotos para hacer tu perfil más atractivo</p>
+          <img src="https://i.postimg.cc/RV7L0zYw/6-agregar-fotos.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Puedes subir historias para mantener tu perfil activo</p>
+          <img src="https://i.postimg.cc/rF1NpLHx/7-agregar-historias.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Edita tus historias para mejorar tu contenido</p>
+          <img src="https://i.postimg.cc/J4N5hWFJ/8-editar-historias.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Cambia tu foto de perfil cuando lo necesites</p>
+          <img src="https://i.postimg.cc/3JXFwHqy/9-cambiar-foto-de-perfil.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Puedes cambiar tu nombre para que los usuarios te identifiquen fácilmente</p>
+          <img src="https://i.postimg.cc/3JXFwHqg/10-cambiar-nombre.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Agrega una descripción atractiva para conectar con los usuarios</p>
+          <img src="https://i.postimg.cc/9FdYfjkP/11-agregar-una-descripcion.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>La edad no se puede editar manualmente. El sistema la asigna automáticamente según tu documento de identidad durante el proceso de verificación.</p>
+          <img src="https://i.postimg.cc/FsyVKQ6g/12-edad-no-se-puede-cambiar.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Puedes agregar tu puesto de trabajo si deseas compartir más sobre ti</p>
+          <img src="https://i.postimg.cc/02Y0Nq40/13-puesto-de-trabajo-por-si-deseas-agregar.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>También puedes añadir una empresa para complementar tu perfil</p>
+          <img src="https://i.postimg.cc/02Y0Nq4C/14-empresa-por-si-deseas-agregar.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Agrega tu educación si quieres dar más contexto sobre ti</p>
+          <img src="https://i.postimg.cc/FsyVKQ6G/15-Educacion-por-si-deseas-agregar.png" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Puedes copiar tu ID para compartir tu perfil fácilmente</p>
+          <img src="https://i.postimg.cc/yYmyNzGL/16-Copiar-ID.png" loading="lazy" decoding="async">
+        </div></div>
+
+      </div>
+      <div class="contador" id="contador-gestion"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: FOTOGRAFÍAS — CORRECTAS
+  ══════════════════════════════════════ -->
+  <div id="section-correctas" class="content-area" style="display:none;">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="moveSlider('correctas', -1)">❮</div>
+      <div class="arrow right" onclick="moveSlider('correctas',  1)">❯</div>
+      <div class="slides" id="slides-correctas">
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano medio corto con ángulo natural y luz con sombras. La iluminación natural crea una foto estética y atractiva</p>
+            <img src="https://i.postimg.cc/QxSywMyN/557223f7db6ba2be4d2412573fbbe868.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Primer plano con ángulo normal en blanco y negro. Este estilo resalta la expresión y aporta un toque artístico</p>
+          <img src="https://i.postimg.cc/J4K2vh2m/637a50477e2010671db5767130671a12.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano medio corto con ángulo picado y luz suave. Las sombras ayudan a dar profundidad a la imagen</p>
+          <img src="https://i.postimg.cc/kXwpz5pC/69d8ad9dcaa6cdd24e3e07a437a9e60b.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano americano con ángulo natural y buena iluminación. El entorno complementa la foto y la hace más interesante</p>
+          <img src="https://i.postimg.cc/CLJQXKQK/804db17c4bafc5060870caa884685c52.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano entero con luz natural y ambiente relajado. La iluminación hace que la imagen se vea auténtica</p>
+          <img src="https://i.postimg.cc/dtnxp0xJ/8536a735291e52038fb2b6e4ed93e4dd.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano entero con ángulo normal y luz equilibrada. Permite mostrar mejor el cuerpo completo</p>
+          <img src="https://i.postimg.cc/NfbzS0zw/cc315094a493fb793aa82782bede9a6d.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano medio corto con ángulo contrapicado y sombras marcadas. El contraste de luz genera una imagen más impactante</p>
+          <img src="https://i.postimg.cc/65BPMZYq/e24c072fb1a31efae1ab0511ec108281.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano entero con ángulo bajo y luz natural. El ángulo aporta presencia y fuerza visual</p>
+          <img src="https://i.postimg.cc/7YXWdLWZ/f2d8adc5d0e2e6180b4f8dc2c23590f8.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Plano medio corto con ángulo directo y luz frontal. La iluminación resalta el rostro y genera conexión</p>
+          <img src="https://i.postimg.cc/PrKR9qRT/f4d19261331db72883bdc8506b73f9a2.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+      </div>
+      <div class="contador" id="contador-correctas"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: FOTOGRAFÍAS — INCORRECTAS
+  ══════════════════════════════════════ -->
+  <div id="section-incorrectas" class="content-area" style="display:none;">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="moveSlider('incorrectas', -1)">❮</div>
+      <div class="arrow right" onclick="moveSlider('incorrectas',  1)">❯</div>
+      <div class="slides" id="slides-incorrectas">
+
+        <div class="slide"><div class="card-img-text">
+          <p>Evita repetir el mismo plano y ángulo en todas tus fotos</p>
+          <img src="https://i.postimg.cc/nrG3z9Rn/Angulo-y-plano-repetitivo-1.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>La falta de variedad hace que tu perfil se vea aburrido</p>
+          <img src="https://i.postimg.cc/QCJftK4s/Angulo-y-plano-repetitivo-2.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>No muestres solo una parte del rostro, genera poca conexión</p>
+          <img src="https://i.postimg.cc/sxjpT6mz/Selfie-mostrando-solo-parte-de-la-cara-NO.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Evita cubrir tu rostro, es importante que se vea claramente</p>
+          <img src="https://i.postimg.cc/gjzvgSsm/Selfie-tapandose-la-cara-NO.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>No ocultes tu cara con manos u objetos</p>
+          <img src="https://i.postimg.cc/0jkpVWnk/Selfie-tapandose-la-cara-NO.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>Evita fotos con animales o menores de edad, no están permitidas en la aplicación</p>
+          <img src="https://i.postimg.cc/kGJxT1sn/Selfie-tapandose-la-cara-NO-y-con-animales.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+      </div>
+      <div class="contador" id="contador-incorrectas"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: FOTOGRAFÍAS — CONSEJOS
+  ══════════════════════════════════════ -->
+  <div id="section-consejos" class="content-area" style="display:none;">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="moveSlider('consejos', -1)">❮</div>
+      <div class="arrow right" onclick="moveSlider('consejos',  1)">❯</div>
+      <div class="slides" id="slides-consejos">
+
+        <div class="slide"><div class="card-img-text">
+          <p>Los planos definen cuánto de tu cuerpo se muestra en la foto. Para un perfil atractivo, lo ideal es combinar plano entero, plano americano y plano medio corto. Evita usar siempre el mismo plano, ya que la variedad hace que tu perfil se vea más dinámico e interesante.</p>
+          <img src="https://i.postimg.cc/rFL6wSpn/Todos-los-planos.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>El ángulo es desde dónde se toma la foto. Puedes usar ángulo normal, picado o contrapicado para generar sensaciones diferentes. Cambiar los ángulos entre fotos hace que tu perfil se vea más profesional y menos repetitivo.</p>
+          <img src="https://i.postimg.cc/nLrgP2dq/Angulos.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <!-- SLIDE CARRUSEL AUTOMÁTICO -->
+        <div class="slide">
+          <div class="card-img-text">
+            <p>Un perfil atractivo combina diferentes planos, ángulos y estilos. No repitas las mismas poses, cambia el enfoque en cada foto para generar mayor impacto visual.</p>
+            <div style="width:100%; position:relative; border-radius:14px; overflow:hidden; border:1px solid #222;">
+              <div id="autoCarousel" style="display:flex; transition:transform 0.5s ease;">
+                <img src="https://i.postimg.cc/QxSywMyN/557223f7db6ba2be4d2412573fbbe868.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/J4K2vh2m/637a50477e2010671db5767130671a12.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/kXwpz5pC/69d8ad9dcaa6cdd24e3e07a437a9e60b.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/CLJQXKQK/804db17c4bafc5060870caa884685c52.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/dtnxp0xJ/8536a735291e52038fb2b6e4ed93e4dd.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/NfbzS0zw/cc315094a493fb793aa82782bede9a6d.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/65BPMZYq/e24c072fb1a31efae1ab0511ec108281.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/7YXWdLWZ/f2d8adc5d0e2e6180b4f8dc2c23590f8.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+                <img src="https://i.postimg.cc/PrKR9qRT/f4d19261331db72883bdc8506b73f9a2.jpg" style="min-width:100%; object-fit:cover; height:42vh;" loading="lazy">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="slide"><div class="card-img-text">
+          <p>La iluminación es clave. Evita el contraluz (cuando la luz está detrás de ti), ya que oscurece tu rostro. Siempre colócate frente a la luz, preferiblemente luz natural, para que tu imagen se vea clara, atractiva y de mejor calidad.</p>
+          <img src="https://i.postimg.cc/k5FV7kP7/iluminacion-contraluz-comparacion.jpg" loading="lazy" decoding="async">
+        </div></div>
+
+        <div class="slide"><div class="card-impact">
+          <p style="font-size:14px; line-height:1.8; color:#ccc; text-align:center;">No se trata solo de verte bien, sino de saber variar. Un perfil exitoso combina planos, ángulos e iluminación de forma inteligente para mantener la atención del usuario. Además, esto debe ir acompañado de una descripción estratégica que genere interés y motive a interactuar.</p>
+          <p style="color:#ffd700; font-size:13px; font-weight:700; text-align:center; margin-top:4px;">Puedes ver ejemplos en la sección de Descripciones →</p>
+        </div></div>
+
+      </div>
+      <div class="contador" id="contador-consejos"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       TAB: DESCRIPCIONES
+  ══════════════════════════════════════ -->
+  <div id="section-descs" class="content-area" style="display:none;">
+    <div class="slider-container">
+      <div class="arrow left"  onclick="moveSlider('descs', -1)">❮</div>
+      <div class="arrow right" onclick="moveSlider('descs',  1)">❯</div>
+      <div class="slides" id="slides-descs">
+
+        <!-- INTRO -->
+        <div class="slide"><div class="card-impact">
+          <h3>Descripciones que convierten</h3>
+          <p>Tu descripción no es solo texto, es una herramienta para atraer, generar interés y provocar acción en el usuario.</p>
+          <p style="color:#ffd700; font-size:13px;">Desliza para ver los ejemplos por categoría →</p>
+        </div></div>
+
+        <!-- LLAMADO A LA ACCIÓN -->
+        <div class="slide"><div class="card-desc">
+          <h4>Llamado a la acción</h4>
+          <p class="desc-intro">Estas descripciones están diseñadas para guiar directamente al usuario a una acción específica como entrar a tu chat, seguirte o interactuar contigo. Son ideales si tienes mensajes automáticos o contenido de pago activo.</p>
+          <div class="copy-box" onclick="copiarTexto('Sígueme y mira mi contenido en nuestro chat 🫣✨🥵', event)">
+            <span>Sígueme y mira mi contenido en nuestro chat 🫣✨🥵</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Sígueme y ve las reglas de mi juego en nuestro chat', event)">
+            <span>Sígueme y ve las reglas de mi juego en nuestro chat</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Lo mejor no está aquí… está en nuestro chat 😈', event)">
+            <span>Lo mejor no está aquí… está en nuestro chat 😈</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <p style="font-size:12px; color:#777; text-align:center; margin-top:6px;">Toca cualquier texto para copiarlo y pegarlo en tu perfil</p>
+        </div></div>
+
+        <!-- GENERAR CONEXIÓN -->
+        <div class="slide"><div class="card-desc">
+          <h4>Generar conexión</h4>
+          <p class="desc-intro">Estas descripciones buscan crear cercanía emocional con el usuario, hacer que se sienta especial y aumentar la probabilidad de que quiera interactuar contigo.</p>
+          <div class="copy-box" onclick="copiarTexto('Me encantaría conocerte y que juegues conmigo 🥵🤭', event)">
+            <span>Me encantaría conocerte y que juegues conmigo 🥵🤭</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Ven y descubre lo que tengo preparado para ti 💋', event)">
+            <span>Ven y descubre lo que tengo preparado para ti 💋</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Quiero conocerte mejor… pero tendrás que atreverte', event)">
+            <span>Quiero conocerte mejor… pero tendrás que atreverte</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <p style="font-size:12px; color:#777; text-align:center; margin-top:6px;">Toca cualquier texto para copiarlo y pegarlo en tu perfil</p>
+        </div></div>
+
+        <!-- CURIOSIDAD -->
+        <div class="slide"><div class="card-desc">
+          <h4>Curiosidad</h4>
+          <p class="desc-intro">Estas descripciones generan intriga y dejan algo sin decir, lo que provoca que el usuario quiera descubrir más entrando a tu chat o perfil.</p>
+          <div class="copy-box" onclick="copiarTexto('Mi fantasía es tener a alguien que sea capaz de dar todo por mí', event)">
+            <span>Mi fantasía es tener a alguien que sea capaz de dar todo por mí</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('¿Quieres ver hasta dónde podemos llegar? Llámame 😈', event)">
+            <span>¿Quieres ver hasta dónde podemos llegar? Llámame 😈</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Esto es solo el comienzo… lo demás es en privado 🫣🔥', event)">
+            <span>Esto es solo el comienzo… lo demás es en privado 🫣🔥</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <p style="font-size:12px; color:#777; text-align:center; margin-top:6px;">Toca cualquier texto para copiarlo y pegarlo en tu perfil</p>
+        </div></div>
+
+        <!-- PROVOCACIÓN / EXCLUSIVIDAD -->
+        <div class="slide"><div class="card-desc">
+          <h4>Provocación / exclusividad</h4>
+          <p class="desc-intro">Estas descripciones hacen que el usuario sienta que no todos tienen acceso a ti, aumentando el deseo y el interés.</p>
+          <div class="copy-box" onclick="copiarTexto('No soy para todos… solo para quien se atreva 😏', event)">
+            <span>No soy para todos… solo para quien se atreva 😏</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Estoy esperando a alguien que sepa cómo tratarme… ¿eres tú?', event)">
+            <span>Estoy esperando a alguien que sepa cómo tratarme… ¿eres tú?</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Si te gusté, imagina lo que puede pasar en privado 🫣🔥', event)">
+            <span>Si te gusté, imagina lo que puede pasar en privado 🫣🔥</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <p style="font-size:12px; color:#777; text-align:center; margin-top:6px;">Toca cualquier texto para copiarlo y pegarlo en tu perfil</p>
+        </div></div>
+
+        <!-- ACCIÓN DIRECTA -->
+        <div class="slide"><div class="card-desc">
+          <h4>Acción directa</h4>
+          <p class="desc-intro">Estas descripciones empujan al usuario a actuar inmediatamente, sin pensar demasiado. Son ideales para convertir visitas en interacción.</p>
+          <div class="copy-box" onclick="copiarTexto('No pierdas el tiempo mirando… mejor actúa 💋', event)">
+            <span>No pierdas el tiempo mirando… mejor actúa 💋</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Entra a mi chat y te explico cómo funciona todo', event)">
+            <span>Entra a mi chat y te explico cómo funciona todo</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <div class="copy-box" onclick="copiarTexto('Sígueme y descubre todo lo que puedo ofrecerte 🔥', event)">
+            <span>Sígueme y descubre todo lo que puedo ofrecerte 🔥</span>
+            <i class="fa-regular fa-copy copy-icon"></i>
+          </div>
+          <p style="font-size:12px; color:#777; text-align:center; margin-top:6px;">Toca cualquier texto para copiarlo y pegarlo en tu perfil</p>
+        </div></div>
+
+        <!-- CIERRE -->
+        <div class="slide"><div class="card-impact">
+          <p class="msg-final">Evita descripciones vacías. Tu perfil debe atraer, conectar y convertir.</p>
+        </div></div>
+
+      </div>
+      <div class="contador" id="contador-descs"></div>
+    </div>
+  </div>
+
+</div><!-- /mainContent -->
+
+<!-- Toast copiado -->
+<div class="copy-toast" id="copyToast">¡Copiado! ✓</div>
+
+<!-- ════════════════════════════════════════════
+     ❌ NO TOCAR — INICIO SCRIPTS
+════════════════════════════════════════════ -->
+<script src="ids.js"></script>
+<script>
+
+const DURACION = 3 * 60 * 60 * 1000;
+
+function checkPassword() {
+  const input   = document.getElementById('passInput').value.trim();
+  const usuario = USUARIOS.find(u => u.id === input);
+  if (usuario) {
+    localStorage.setItem("fairyAccess", "true");
+    localStorage.setItem("fairyTime",   Date.now());
+    localStorage.setItem("fairyNombre", `Hola ${usuario.nombre} ${usuario.apellido} 👋`);
+    document.getElementById("loginError").style.display       = "none";
+    document.getElementById("btnContactoModal").style.display = "none";
+    window.location.href = "zona-streamer.html";
+  } else {
+    document.getElementById("loginError").style.display       = "block";
+    document.getElementById("btnContactoModal").style.display = "block";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("passwordModal").style.display = "none";
+  document.getElementById("mainContent").style.display   = "block";
+  initContadores();
+  initAutoplay();
+});
+
+function logout() { localStorage.clear(); window.location.href = "zona-streamer.html"; }
+
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("active");
+  document.getElementById("overlay").classList.toggle("active");
+}
+function toggleSub(id) {
+  const el = document.getElementById(id);
+  el.style.maxHeight = el.style.maxHeight ? null : el.scrollHeight + "px";
+}
+
+// ─── CONTADORES ───
+const sections = ['gestion','correctas','incorrectas','consejos','descs'];
+const indices  = {};
+sections.forEach(s => indices[s] = 0);
+
+function initContadores() {
+  sections.forEach(s => {
+    const el = document.getElementById('slides-' + s);
+    if (el) actualizarContador(s, el.children.length);
+  });
+}
+function actualizarContador(s, total) {
+  const el = document.getElementById('contador-' + s);
+  if (el) el.textContent = (indices[s] + 1) + ' / ' + total;
+}
+
+// ─── SLIDERS ───
+function moveSlider(section, dir) {
+  const container = document.getElementById('slides-' + section);
+  if (!container) return;
+  const total = container.children.length;
+  indices[section] += dir;
+  if (indices[section] < 0) indices[section] = 0;
+  if (indices[section] >= total) indices[section] = total - 1;
+  container.style.transform = `translateX(-${indices[section] * 100}vw)`;
+  actualizarContador(section, total);
+}
+
+// ─── TABS ───
+function showTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.content-area').forEach(a => a.style.display = 'none');
+  document.getElementById('subtabs-fotos').style.display = 'none';
+
+  sections.forEach(s => { indices[s] = 0; });
+  stopAutoplay();
+  document.querySelectorAll('.slides').forEach(s => s.style.transform = 'translateX(0)');
+  sections.forEach(s => {
+    const el = document.getElementById('slides-' + s);
+    if (el) actualizarContador(s, el.children.length);
+  });
+
+  if (tab === 'gestion') {
+    document.getElementById('t-gestion').classList.add('active');
+    document.getElementById('section-gestion').style.display = 'block';
+  } else if (tab === 'fotos') {
+    document.getElementById('t-fotos').classList.add('active');
+    document.getElementById('subtabs-fotos').style.display = 'flex';
+    document.getElementById('section-consejos').style.display = 'block';
+    document.getElementById('st-consejos').classList.add('active');
+    initAutoplay();
+  } else {
+    document.getElementById('t-descs').classList.add('active');
+    document.getElementById('section-descs').style.display = 'block';
+  }
+}
+
+// ─── SUBTABS FOTOS ───
+function showSubFotos(sub) {
+  document.querySelectorAll('.subtab').forEach(s => s.classList.remove('active'));
+  ['correctas','incorrectas','consejos'].forEach(s => {
+    document.getElementById('section-' + s).style.display = 'none';
+    indices[s] = 0;
+    const el = document.getElementById('slides-' + s);
+    if (el) { el.style.transform = 'translateX(0)'; actualizarContador(s, el.children.length); }
+  });
+  stopAutoplay();
+  document.getElementById('st-' + sub).classList.add('active');
+  document.getElementById('section-' + sub).style.display = 'block';
+  if (sub === 'consejos') initAutoplay();
+}
+
+// ─── AUTOPLAY CARRUSEL — loop infinito sin salto ───
+let autoplayTimer = null;
+
+function initAutoplay() {
+  const carousel = document.getElementById('autoCarousel');
+  if (!carousel) return;
+
+  // Contar solo originales (data-original)
+  let originals = Array.from(carousel.querySelectorAll('img[data-original]'));
+  if (originals.length === 0) {
+    // Primera vez: marcar originales y clonar
+    originals = Array.from(carousel.children);
+    originals.forEach(img => img.setAttribute('data-original', '1'));
+    originals.forEach(img => {
+      const clone = img.cloneNode(true);
+      clone.removeAttribute('data-original');
+      carousel.appendChild(clone);
+    });
+  }
+  const total = originals.length;
+
+  // Reset sin transición
+  carousel.style.transition = 'none';
+  carousel.style.transform  = 'translateX(0)';
+
+  if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+
+  let current = 0;
+  autoplayTimer = setInterval(() => {
+    current++;
+    carousel.style.transition = 'transform 0.6s ease';
+    carousel.style.transform  = `translateX(-${current * 100}%)`;
+
+    if (current >= total) {
+      setTimeout(() => {
+        carousel.style.transition = 'none';
+        carousel.style.transform  = 'translateX(0)';
+        current = 0;
+      }, 650);
+    }
+  }, 2000);
+}
+
+function stopAutoplay() {
+  if (autoplayTimer) { clearInterval(autoplayTimer); autoplayTimer = null; }
+}
+
+// ─── COPIAR TEXTO ───
+function copiarTexto(texto, event) {
+  const doToast = () => {
+    const toast = document.getElementById('copyToast');
+    toast.classList.add('show');
+    if (event && event.currentTarget) {
+      event.currentTarget.style.borderColor = '#ffd700';
+      setTimeout(() => { event.currentTarget.style.borderColor = '#333'; }, 800);
+    }
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(texto).then(doToast).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = texto; document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta); doToast();
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = texto; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta); doToast();
+  }
+}
+
+</script>
+<!-- ════════════════════════════════════════════
+     ❌ NO TOCAR — FIN SCRIPTS
+════════════════════════════════════════════ -->
+
+</body>
+</html>
