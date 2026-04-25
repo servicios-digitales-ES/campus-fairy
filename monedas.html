@@ -290,10 +290,79 @@ body {
   border-bottom: 1px solid #222;
 }
 
-.tabla-wrap {
-  background: #111; border: 1px solid #222; border-radius: 14px;
-  padding: 14px 10px; margin-bottom: 14px; overflow-x: auto;
+/* ── BLOQUE CONTEXTO VERSIÓN ── */
+.version-context {
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  border-left: 3px solid #ffd700;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #bbb;
 }
+.version-context strong { color: #ffd700; }
+.tabla-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  margin-bottom: 8px;
+  width: 100%;
+}
+.tabla-track {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+.tabla-slide {
+  min-width: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+.tabla-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+.tabla-arrow {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.7);
+  border: 1px solid #ffd700;
+  color: #ffd700;
+  font-size: 13px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0.2;
+  transition: opacity 0.3s;
+  -webkit-tap-highlight-color: transparent;
+  animation: arrowBlink 0.35s ease 3;
+}
+.tabla-arrow:active { opacity: 1 !important; background: rgba(255,215,0,0.15); }
+.tabla-dots {
+  display: flex; gap: 6px; align-items: center;
+}
+.tabla-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: #333; transition: background 0.3s, transform 0.3s;
+}
+.version-msg {
+  background: #161600;
+  border: 1px solid #3a3300;
+  border-left: 3px solid #ffd700;
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #ccc;
+  margin-bottom: 14px;
+  transition: opacity 0.3s;
+}
+.version-msg strong { color: #ffd700; }
 </style>
 </head>
 
@@ -536,292 +605,120 @@ body {
        TAB 2 — RETO FAIRY
   ══════════════════════════════════════ -->
   <div id="section-reto">
-
-    <!-- VISTA GRID (intro + etapas centradas) -->
     <div id="retoGrid" style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:calc(100vh - 140px); padding:16px; gap:20px;">
-
-      <div class="reto-intro" style="max-width:420px; width:100%;">
-        El <strong>Reto Fairy</strong> es una guía de crecimiento progresivo. Te indica cuántas monedas debes generar cada día y cada semana. No es un límite, es el <strong>mínimo recomendado</strong> para crecer dentro de la app. Puedes generar más si lo deseas. Elige la opción que mejor se adapte a tu tiempo: trabajar 7 días, descansar 1 día o descansar 2 días. La constancia es más importante que la intensidad. <strong>Comienza con la Etapa 1.</strong>
-      </div>
-
+      <div class="reto-intro" style="max-width:420px; width:100%;">El <strong>Reto Fairy</strong> es una guía de crecimiento progresivo. Te indica cuántas monedas debes generar cada día y cada semana. No es un límite, es el <strong>mínimo recomendado</strong> para crecer dentro de la app. Puedes generar más si lo deseas. Elige la opción que mejor se adapte a tu tiempo: trabajar 7 días, descansar 1 día o descansar 2 días. La constancia es más importante que la intensidad. <strong>Comienza con la Etapa 1.</strong></div>
       <div class="etapas-grid" style="max-width:420px; width:100%; margin-bottom:0;">
-        <div class="etapa-card" id="card-e1" onclick="abrirEtapa(1)">
-          <h4>Etapa 1</h4><p>Base</p>
-        </div>
-        <div class="etapa-card" id="card-e2" onclick="abrirEtapa(2)">
-          <h4>Etapa 2</h4><p>Estabilidad</p>
-        </div>
-        <div class="etapa-card" id="card-e3" onclick="abrirEtapa(3)">
-          <h4>Etapa 3</h4><p>Consolidación</p>
-        </div>
+        <div class="etapa-card" onclick="abrirEtapa(1)"><h4>Etapa 1</h4><p>Base</p></div>
+        <div class="etapa-card" onclick="abrirEtapa(2)"><h4>Etapa 2</h4><p>Estabilidad</p></div>
+        <div class="etapa-card" onclick="abrirEtapa(3)"><h4>Etapa 3</h4><p>Consolidación</p></div>
       </div>
-
     </div>
-
-    <!-- VISTA DETALLE (se muestra al abrir etapa) -->
     <div id="retoDetalle" style="display:none; padding:16px 16px 40px; overflow-y:auto; max-height:calc(100vh - 140px);">
-
-      <!-- Header dinámico por etapa -->
       <div id="etapaHeader" style="background:#111; border:1px solid #222; border-radius:14px; padding:16px 18px; margin-bottom:16px;">
         <p id="etapaTitulo" style="color:#ffd700; font-weight:700; font-size:15px; margin-bottom:4px;"></p>
-        <p id="etapaDesc"   style="color:#aaa; font-size:13px; line-height:1.6;"></p>
+        <p id="etapaDesc" style="color:#aaa; font-size:13px; line-height:1.6;"></p>
       </div>
-
-    <!-- DETALLE ETAPA 1 -->
     <div class="etapa-detalle" id="detalle-e1">
-      <div class="version-tabs">
-        <div class="vtab active" id="v1-7" onclick="verVersion(1,7)">7 días</div>
-        <div class="vtab"        id="v1-6" onclick="verVersion(1,6)">Descansar 1 día</div>
-        <div class="vtab"        id="v1-5" onclick="verVersion(1,5)">Descansar 2 días</div>
-      </div>
-      <!-- V 7 días -->
+      <div class="version-tabs"><div class="vtab active" id="v1-7" onclick="verVersion(1,7)">7 días</div><div class="vtab" id="v1-6" onclick="verVersion(1,6)">Descansar 1 día</div><div class="vtab" id="v1-5" onclick="verVersion(1,5)">Descansar 2 días</div></div>
       <div class="semanas-bloque active" id="e1v7">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>2,800</td><td>$4.31</td><td>19,500</td><td>$30.00</td></tr>
-          <tr><td>2</td><td>5,600</td><td>$8.62</td><td>39,000</td><td>$60.00</td></tr>
-          <tr><td>3</td><td>8,400</td><td>$12.92</td><td>58,500</td><td>$90.00</td></tr>
-          <tr><td>4</td><td>11,100</td><td>$17.08</td><td>78,000</td><td>$120.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>13,900</td><td>$21.38</td><td>97,500</td><td>$150.00</td></tr>
-          <tr><td>6</td><td>18,100</td><td>$27.85</td><td>116,000</td><td>$178.46</td></tr>
-          <tr><td>7</td><td>22,100</td><td>$34.00</td><td>155,000</td><td>$238.46</td></tr>
-          <tr><td>8</td><td>25,100</td><td>$38.62</td><td>175,000</td><td>$269.23</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>30,600</td><td>$47.08</td><td>214,000</td><td>$329.23</td></tr>
-          <tr><td>10</td><td>31,900</td><td>$49.08</td><td>224,000</td><td>$344.62</td></tr>
-          <tr><td>11</td><td>32,900</td><td>$50.62</td><td>229,000</td><td>$352.31</td></tr>
-          <tr><td>12</td><td>33,400</td><td>$51.38</td><td>234,000</td><td>$360.00</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>¡Buena elección!</strong> Trabajar los 7 días seguidos beneficia directamente tu algoritmo — la app detecta actividad constante y te da mayor visibilidad. Estás en la <strong>Etapa 1</strong>: el objetivo no es ganar mucho de golpe, sino construir el hábito y aprender el ritmo del sistema.</div>
+        <div class="tabla-slider" id="ts-e1v7"><div class="tabla-track" id="tt-e1v7"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>2,800</td><td>$4.31</td><td>19,500</td><td>$30.00</td></tr><tr><td>2</td><td>5,600</td><td>$8.62</td><td>39,000</td><td>$60.00</td></tr><tr><td>3</td><td>8,400</td><td>$12.92</td><td>58,500</td><td>$90.00</td></tr><tr><td>4</td><td>11,100</td><td>$17.08</td><td>78,000</td><td>$120.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>13,900</td><td>$21.38</td><td>97,500</td><td>$150.00</td></tr><tr><td>6</td><td>18,100</td><td>$27.85</td><td>116,000</td><td>$178.46</td></tr><tr><td>7</td><td>22,100</td><td>$34.00</td><td>155,000</td><td>$238.46</td></tr><tr><td>8</td><td>25,100</td><td>$38.62</td><td>175,000</td><td>$269.23</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>30,600</td><td>$47.08</td><td>214,000</td><td>$329.23</td></tr><tr><td>10</td><td>31,900</td><td>$49.08</td><td>224,000</td><td>$344.62</td></tr><tr><td>11</td><td>32,900</td><td>$50.62</td><td>229,000</td><td>$352.31</td></tr><tr><td>12</td><td>33,400</td><td>$51.38</td><td>234,000</td><td>$360.00</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e1v7" onclick="tablaMove('e1v7',-1)">❮</div>
+          <div class="tabla-dots" id="td-e1v7"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e1v7" onclick="tablaMove('e1v7',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 6 días -->
       <div class="semanas-bloque" id="e1v6">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>3,250</td><td>$5.00</td><td>19,500</td><td>$30.00</td></tr>
-          <tr><td>2</td><td>6,500</td><td>$10.00</td><td>39,000</td><td>$60.00</td></tr>
-          <tr><td>3</td><td>9,750</td><td>$15.00</td><td>58,500</td><td>$90.00</td></tr>
-          <tr><td>4</td><td>13,000</td><td>$20.00</td><td>78,000</td><td>$120.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>16,250</td><td>$25.00</td><td>97,500</td><td>$150.00</td></tr>
-          <tr><td>6</td><td>19,333</td><td>$29.74</td><td>116,000</td><td>$178.46</td></tr>
-          <tr><td>7</td><td>25,833</td><td>$39.74</td><td>155,000</td><td>$238.46</td></tr>
-          <tr><td>8</td><td>29,167</td><td>$44.87</td><td>175,000</td><td>$269.23</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>35,667</td><td>$54.87</td><td>214,000</td><td>$329.23</td></tr>
-          <tr><td>10</td><td>37,333</td><td>$57.44</td><td>224,000</td><td>$344.62</td></tr>
-          <tr><td>11</td><td>38,167</td><td>$58.72</td><td>229,000</td><td>$352.31</td></tr>
-          <tr><td>12</td><td>39,000</td><td>$60.00</td><td>234,000</td><td>$360.00</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Excelente elección.</strong> Tomar un día libre es inteligente — el cuerpo necesita recuperarse para rendir mejor. Estás en la <strong>Etapa 1</strong>: enfócate en construir constancia antes de exigirte más.</div>
+        <div class="tabla-slider" id="ts-e1v6"><div class="tabla-track" id="tt-e1v6"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>3,250</td><td>$5.00</td><td>19,500</td><td>$30.00</td></tr><tr><td>2</td><td>6,500</td><td>$10.00</td><td>39,000</td><td>$60.00</td></tr><tr><td>3</td><td>9,750</td><td>$15.00</td><td>58,500</td><td>$90.00</td></tr><tr><td>4</td><td>13,000</td><td>$20.00</td><td>78,000</td><td>$120.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>16,250</td><td>$25.00</td><td>97,500</td><td>$150.00</td></tr><tr><td>6</td><td>19,333</td><td>$29.74</td><td>116,000</td><td>$178.46</td></tr><tr><td>7</td><td>25,833</td><td>$39.74</td><td>155,000</td><td>$238.46</td></tr><tr><td>8</td><td>29,167</td><td>$44.87</td><td>175,000</td><td>$269.23</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>35,667</td><td>$54.87</td><td>214,000</td><td>$329.23</td></tr><tr><td>10</td><td>37,333</td><td>$57.44</td><td>224,000</td><td>$344.62</td></tr><tr><td>11</td><td>38,167</td><td>$58.72</td><td>229,000</td><td>$352.31</td></tr><tr><td>12</td><td>39,000</td><td>$60.00</td><td>234,000</td><td>$360.00</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e1v6" onclick="tablaMove('e1v6',-1)">❮</div>
+          <div class="tabla-dots" id="td-e1v6"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e1v6" onclick="tablaMove('e1v6',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 5 días -->
       <div class="semanas-bloque" id="e1v5">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>3,900</td><td>$6.00</td><td>19,500</td><td>$30.00</td></tr>
-          <tr><td>2</td><td>7,800</td><td>$12.00</td><td>39,000</td><td>$60.00</td></tr>
-          <tr><td>3</td><td>11,700</td><td>$18.00</td><td>58,500</td><td>$90.00</td></tr>
-          <tr><td>4</td><td>15,600</td><td>$24.00</td><td>78,000</td><td>$120.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>19,500</td><td>$30.00</td><td>97,500</td><td>$150.00</td></tr>
-          <tr><td>6</td><td>23,200</td><td>$35.69</td><td>116,000</td><td>$178.46</td></tr>
-          <tr><td>7</td><td>31,000</td><td>$47.69</td><td>155,000</td><td>$238.46</td></tr>
-          <tr><td>8</td><td>35,000</td><td>$53.85</td><td>175,000</td><td>$269.23</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>42,800</td><td>$65.85</td><td>214,000</td><td>$329.23</td></tr>
-          <tr><td>10</td><td>44,800</td><td>$68.92</td><td>224,000</td><td>$344.62</td></tr>
-          <tr><td>11</td><td>45,800</td><td>$70.46</td><td>229,000</td><td>$352.31</td></tr>
-          <tr><td>12</td><td>46,800</td><td>$72.00</td><td>234,000</td><td>$360.00</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Buena decisión.</strong> Descansar 2 días mantiene tu energía a largo plazo. Estás en la <strong>Etapa 1</strong>: lo más importante es la consistencia, no la cantidad de horas en un solo día.</div>
+        <div class="tabla-slider" id="ts-e1v5"><div class="tabla-track" id="tt-e1v5"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>3,900</td><td>$6.00</td><td>19,500</td><td>$30.00</td></tr><tr><td>2</td><td>7,800</td><td>$12.00</td><td>39,000</td><td>$60.00</td></tr><tr><td>3</td><td>11,700</td><td>$18.00</td><td>58,500</td><td>$90.00</td></tr><tr><td>4</td><td>15,600</td><td>$24.00</td><td>78,000</td><td>$120.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>19,500</td><td>$30.00</td><td>97,500</td><td>$150.00</td></tr><tr><td>6</td><td>23,200</td><td>$35.69</td><td>116,000</td><td>$178.46</td></tr><tr><td>7</td><td>31,000</td><td>$47.69</td><td>155,000</td><td>$238.46</td></tr><tr><td>8</td><td>35,000</td><td>$53.85</td><td>175,000</td><td>$269.23</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>42,800</td><td>$65.85</td><td>214,000</td><td>$329.23</td></tr><tr><td>10</td><td>44,800</td><td>$68.92</td><td>224,000</td><td>$344.62</td></tr><tr><td>11</td><td>45,800</td><td>$70.46</td><td>229,000</td><td>$352.31</td></tr><tr><td>12</td><td>46,800</td><td>$72.00</td><td>234,000</td><td>$360.00</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e1v5" onclick="tablaMove('e1v5',-1)">❮</div>
+          <div class="tabla-dots" id="td-e1v5"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e1v5" onclick="tablaMove('e1v5',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
     </div>
-
-    <!-- DETALLE ETAPA 2 -->
     <div class="etapa-detalle" id="detalle-e2">
-      <div class="version-tabs">
-        <div class="vtab active" id="v2-7" onclick="verVersion(2,7)">7 días</div>
-        <div class="vtab"        id="v2-6" onclick="verVersion(2,6)">Descansar 1 día</div>
-        <div class="vtab"        id="v2-5" onclick="verVersion(2,5)">Descansar 2 días</div>
-      </div>
-      <!-- V 7 días -->
+      <div class="version-tabs"><div class="vtab active" id="v2-7" onclick="verVersion(2,7)">7 días</div><div class="vtab" id="v2-6" onclick="verVersion(2,6)">Descansar 1 día</div><div class="vtab" id="v2-5" onclick="verVersion(2,5)">Descansar 2 días</div></div>
       <div class="semanas-bloque active" id="e2v7">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>33,600</td><td>$51.69</td><td>235,000</td><td>$361.54</td></tr>
-          <tr><td>2</td><td>36,400</td><td>$56.00</td><td>255,000</td><td>$392.31</td></tr>
-          <tr><td>3</td><td>39,300</td><td>$60.46</td><td>275,000</td><td>$423.08</td></tr>
-          <tr><td>4</td><td>42,100</td><td>$64.77</td><td>295,000</td><td>$453.85</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>45,000</td><td>$69.23</td><td>315,000</td><td>$484.62</td></tr>
-          <tr><td>6</td><td>48,600</td><td>$74.77</td><td>340,000</td><td>$523.08</td></tr>
-          <tr><td>7</td><td>52,100</td><td>$80.15</td><td>365,000</td><td>$561.54</td></tr>
-          <tr><td>8</td><td>55,700</td><td>$85.69</td><td>390,000</td><td>$600.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>59,300</td><td>$91.23</td><td>415,000</td><td>$638.46</td></tr>
-          <tr><td>10</td><td>62,900</td><td>$96.77</td><td>440,000</td><td>$676.92</td></tr>
-          <tr><td>11</td><td>65,000</td><td>$100.00</td><td>455,000</td><td>$700.00</td></tr>
-          <tr><td>12</td><td>67,100</td><td>$103.23</td><td>470,000</td><td>$723.08</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>¡Buena elección!</strong> Trabajar 7 días refuerza tu posición en el algoritmo. Estás en la <strong>Etapa 2</strong>: ya pasaste la base — ahora el objetivo es estabilidad y crecimiento sostenido.</div>
+        <div class="tabla-slider" id="ts-e2v7"><div class="tabla-track" id="tt-e2v7"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>33,600</td><td>$51.69</td><td>235,000</td><td>$361.54</td></tr><tr><td>2</td><td>36,400</td><td>$56.00</td><td>255,000</td><td>$392.31</td></tr><tr><td>3</td><td>39,300</td><td>$60.46</td><td>275,000</td><td>$423.08</td></tr><tr><td>4</td><td>42,100</td><td>$64.77</td><td>295,000</td><td>$453.85</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>45,000</td><td>$69.23</td><td>315,000</td><td>$484.62</td></tr><tr><td>6</td><td>48,600</td><td>$74.77</td><td>340,000</td><td>$523.08</td></tr><tr><td>7</td><td>52,100</td><td>$80.15</td><td>365,000</td><td>$561.54</td></tr><tr><td>8</td><td>55,700</td><td>$85.69</td><td>390,000</td><td>$600.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>59,300</td><td>$91.23</td><td>415,000</td><td>$638.46</td></tr><tr><td>10</td><td>62,900</td><td>$96.77</td><td>440,000</td><td>$676.92</td></tr><tr><td>11</td><td>65,000</td><td>$100.00</td><td>455,000</td><td>$700.00</td></tr><tr><td>12</td><td>67,100</td><td>$103.23</td><td>470,000</td><td>$723.08</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e2v7" onclick="tablaMove('e2v7',-1)">❮</div>
+          <div class="tabla-dots" id="td-e2v7"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e2v7" onclick="tablaMove('e2v7',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 6 días -->
       <div class="semanas-bloque" id="e2v6">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>39,167</td><td>$60.26</td><td>235,000</td><td>$361.54</td></tr>
-          <tr><td>2</td><td>42,500</td><td>$65.38</td><td>255,000</td><td>$392.31</td></tr>
-          <tr><td>3</td><td>45,833</td><td>$70.51</td><td>275,000</td><td>$423.08</td></tr>
-          <tr><td>4</td><td>49,167</td><td>$75.64</td><td>295,000</td><td>$453.85</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>52,500</td><td>$80.77</td><td>315,000</td><td>$484.62</td></tr>
-          <tr><td>6</td><td>56,667</td><td>$87.18</td><td>340,000</td><td>$523.08</td></tr>
-          <tr><td>7</td><td>60,833</td><td>$93.59</td><td>365,000</td><td>$561.54</td></tr>
-          <tr><td>8</td><td>65,000</td><td>$100.00</td><td>390,000</td><td>$600.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>69,167</td><td>$106.41</td><td>415,000</td><td>$638.46</td></tr>
-          <tr><td>10</td><td>73,333</td><td>$112.82</td><td>440,000</td><td>$676.92</td></tr>
-          <tr><td>11</td><td>75,833</td><td>$116.67</td><td>455,000</td><td>$700.00</td></tr>
-          <tr><td>12</td><td>78,333</td><td>$120.51</td><td>470,000</td><td>$723.08</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Excelente elección.</strong> Un día de descanso semanal es una estrategia sólida. Estás en la <strong>Etapa 2</strong>: asegúrate de alcanzar o superar tu meta diaria en cada día que trabajas.</div>
+        <div class="tabla-slider" id="ts-e2v6"><div class="tabla-track" id="tt-e2v6"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>39,167</td><td>$60.26</td><td>235,000</td><td>$361.54</td></tr><tr><td>2</td><td>42,500</td><td>$65.38</td><td>255,000</td><td>$392.31</td></tr><tr><td>3</td><td>45,833</td><td>$70.51</td><td>275,000</td><td>$423.08</td></tr><tr><td>4</td><td>49,167</td><td>$75.64</td><td>295,000</td><td>$453.85</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>52,500</td><td>$80.77</td><td>315,000</td><td>$484.62</td></tr><tr><td>6</td><td>56,667</td><td>$87.18</td><td>340,000</td><td>$523.08</td></tr><tr><td>7</td><td>60,833</td><td>$93.59</td><td>365,000</td><td>$561.54</td></tr><tr><td>8</td><td>65,000</td><td>$100.00</td><td>390,000</td><td>$600.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>69,167</td><td>$106.41</td><td>415,000</td><td>$638.46</td></tr><tr><td>10</td><td>73,333</td><td>$112.82</td><td>440,000</td><td>$676.92</td></tr><tr><td>11</td><td>75,833</td><td>$116.67</td><td>455,000</td><td>$700.00</td></tr><tr><td>12</td><td>78,333</td><td>$120.51</td><td>470,000</td><td>$723.08</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e2v6" onclick="tablaMove('e2v6',-1)">❮</div>
+          <div class="tabla-dots" id="td-e2v6"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e2v6" onclick="tablaMove('e2v6',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 5 días -->
       <div class="semanas-bloque" id="e2v5">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>47,000</td><td>$72.31</td><td>235,000</td><td>$361.54</td></tr>
-          <tr><td>2</td><td>51,000</td><td>$78.46</td><td>255,000</td><td>$392.31</td></tr>
-          <tr><td>3</td><td>55,000</td><td>$84.62</td><td>275,000</td><td>$423.08</td></tr>
-          <tr><td>4</td><td>59,000</td><td>$90.77</td><td>295,000</td><td>$453.85</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>63,000</td><td>$96.92</td><td>315,000</td><td>$484.62</td></tr>
-          <tr><td>6</td><td>68,000</td><td>$104.62</td><td>340,000</td><td>$523.08</td></tr>
-          <tr><td>7</td><td>73,000</td><td>$112.31</td><td>365,000</td><td>$561.54</td></tr>
-          <tr><td>8</td><td>78,000</td><td>$120.00</td><td>390,000</td><td>$600.00</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>83,000</td><td>$127.69</td><td>415,000</td><td>$638.46</td></tr>
-          <tr><td>10</td><td>88,000</td><td>$135.38</td><td>440,000</td><td>$676.92</td></tr>
-          <tr><td>11</td><td>91,000</td><td>$140.00</td><td>455,000</td><td>$700.00</td></tr>
-          <tr><td>12</td><td>94,000</td><td>$144.62</td><td>470,000</td><td>$723.08</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Buena decisión.</strong> En esta etapa las metas son mayores — proteger tu energía es igual de importante que trabajar. Estás en la <strong>Etapa 2</strong>: calidad sobre cantidad.</div>
+        <div class="tabla-slider" id="ts-e2v5"><div class="tabla-track" id="tt-e2v5"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>47,000</td><td>$72.31</td><td>235,000</td><td>$361.54</td></tr><tr><td>2</td><td>51,000</td><td>$78.46</td><td>255,000</td><td>$392.31</td></tr><tr><td>3</td><td>55,000</td><td>$84.62</td><td>275,000</td><td>$423.08</td></tr><tr><td>4</td><td>59,000</td><td>$90.77</td><td>295,000</td><td>$453.85</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>63,000</td><td>$96.92</td><td>315,000</td><td>$484.62</td></tr><tr><td>6</td><td>68,000</td><td>$104.62</td><td>340,000</td><td>$523.08</td></tr><tr><td>7</td><td>73,000</td><td>$112.31</td><td>365,000</td><td>$561.54</td></tr><tr><td>8</td><td>78,000</td><td>$120.00</td><td>390,000</td><td>$600.00</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>83,000</td><td>$127.69</td><td>415,000</td><td>$638.46</td></tr><tr><td>10</td><td>88,000</td><td>$135.38</td><td>440,000</td><td>$676.92</td></tr><tr><td>11</td><td>91,000</td><td>$140.00</td><td>455,000</td><td>$700.00</td></tr><tr><td>12</td><td>94,000</td><td>$144.62</td><td>470,000</td><td>$723.08</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e2v5" onclick="tablaMove('e2v5',-1)">❮</div>
+          <div class="tabla-dots" id="td-e2v5"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e2v5" onclick="tablaMove('e2v5',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
     </div>
-
-    <!-- DETALLE ETAPA 3 -->
     <div class="etapa-detalle" id="detalle-e3">
-      <div class="version-tabs">
-        <div class="vtab active" id="v3-7" onclick="verVersion(3,7)">7 días</div>
-        <div class="vtab"        id="v3-6" onclick="verVersion(3,6)">Descansar 1 día</div>
-        <div class="vtab"        id="v3-5" onclick="verVersion(3,5)">Descansar 2 días</div>
-      </div>
-      <!-- V 7 días -->
+      <div class="version-tabs"><div class="vtab active" id="v3-7" onclick="verVersion(3,7)">7 días</div><div class="vtab" id="v3-6" onclick="verVersion(3,6)">Descansar 1 día</div><div class="vtab" id="v3-5" onclick="verVersion(3,5)">Descansar 2 días</div></div>
       <div class="semanas-bloque active" id="e3v7">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>70,000</td><td>$107.69</td><td>490,000</td><td>$753.85</td></tr>
-          <tr><td>2</td><td>74,000</td><td>$113.85</td><td>520,000</td><td>$800.00</td></tr>
-          <tr><td>3</td><td>78,600</td><td>$120.92</td><td>550,000</td><td>$846.15</td></tr>
-          <tr><td>4</td><td>83,000</td><td>$127.69</td><td>580,000</td><td>$892.31</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>87,100</td><td>$134.00</td><td>610,000</td><td>$938.46</td></tr>
-          <tr><td>6</td><td>91,400</td><td>$140.62</td><td>640,000</td><td>$984.62</td></tr>
-          <tr><td>7</td><td>97,100</td><td>$149.38</td><td>680,000</td><td>$1,046.15</td></tr>
-          <tr><td>8</td><td>103,000</td><td>$158.46</td><td>720,000</td><td>$1,107.69</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>111,400</td><td>$171.38</td><td>780,000</td><td>$1,200.00</td></tr>
-          <tr><td>10</td><td>120,000</td><td>$184.62</td><td>840,000</td><td>$1,292.31</td></tr>
-          <tr><td>11</td><td>128,600</td><td>$197.85</td><td>900,000</td><td>$1,384.62</td></tr>
-          <tr><td>12</td><td>134,300</td><td>$206.62</td><td>940,000</td><td>$1,446.15</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>¡Nivel elite!</strong> Llegar a la Etapa 3 trabajando 7 días demuestra que el sistema está completamente integrado en tu rutina. Estás en la <strong>Etapa 3</strong>: consolidación. Las metas son ambiciosas, pero ya demostraste que puedes.</div>
+        <div class="tabla-slider" id="ts-e3v7"><div class="tabla-track" id="tt-e3v7"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>70,000</td><td>$107.69</td><td>490,000</td><td>$753.85</td></tr><tr><td>2</td><td>74,000</td><td>$113.85</td><td>520,000</td><td>$800.00</td></tr><tr><td>3</td><td>78,600</td><td>$120.92</td><td>550,000</td><td>$846.15</td></tr><tr><td>4</td><td>83,000</td><td>$127.69</td><td>580,000</td><td>$892.31</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>87,100</td><td>$134.00</td><td>610,000</td><td>$938.46</td></tr><tr><td>6</td><td>91,400</td><td>$140.62</td><td>640,000</td><td>$984.62</td></tr><tr><td>7</td><td>97,100</td><td>$149.38</td><td>680,000</td><td>$1,046.15</td></tr><tr><td>8</td><td>103,000</td><td>$158.46</td><td>720,000</td><td>$1,107.69</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>111,400</td><td>$171.38</td><td>780,000</td><td>$1,200.00</td></tr><tr><td>10</td><td>120,000</td><td>$184.62</td><td>840,000</td><td>$1,292.31</td></tr><tr><td>11</td><td>128,600</td><td>$197.85</td><td>900,000</td><td>$1,384.62</td></tr><tr><td>12</td><td>134,300</td><td>$206.62</td><td>940,000</td><td>$1,446.15</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e3v7" onclick="tablaMove('e3v7',-1)">❮</div>
+          <div class="tabla-dots" id="td-e3v7"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e3v7" onclick="tablaMove('e3v7',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 6 días -->
       <div class="semanas-bloque" id="e3v6">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>81,667</td><td>$125.64</td><td>490,000</td><td>$753.85</td></tr>
-          <tr><td>2</td><td>86,667</td><td>$133.33</td><td>520,000</td><td>$800.00</td></tr>
-          <tr><td>3</td><td>91,667</td><td>$141.03</td><td>550,000</td><td>$846.15</td></tr>
-          <tr><td>4</td><td>96,667</td><td>$148.72</td><td>580,000</td><td>$892.31</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>101,667</td><td>$156.41</td><td>610,000</td><td>$938.46</td></tr>
-          <tr><td>6</td><td>106,667</td><td>$164.10</td><td>640,000</td><td>$984.62</td></tr>
-          <tr><td>7</td><td>113,333</td><td>$174.36</td><td>680,000</td><td>$1,046.15</td></tr>
-          <tr><td>8</td><td>120,000</td><td>$184.62</td><td>720,000</td><td>$1,107.69</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>130,000</td><td>$200.00</td><td>780,000</td><td>$1,200.00</td></tr>
-          <tr><td>10</td><td>140,000</td><td>$215.38</td><td>840,000</td><td>$1,292.31</td></tr>
-          <tr><td>11</td><td>150,000</td><td>$230.77</td><td>900,000</td><td>$1,384.62</td></tr>
-          <tr><td>12</td><td>156,667</td><td>$241.03</td><td>940,000</td><td>$1,446.15</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Excelente estrategia.</strong> Tomar un día libre en la Etapa 3 es una decisión madura. Estás en la <strong>Etapa 3</strong>: cada semana que completas construye una base de ingresos estable y sostenible.</div>
+        <div class="tabla-slider" id="ts-e3v6"><div class="tabla-track" id="tt-e3v6"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>81,667</td><td>$125.64</td><td>490,000</td><td>$753.85</td></tr><tr><td>2</td><td>86,667</td><td>$133.33</td><td>520,000</td><td>$800.00</td></tr><tr><td>3</td><td>91,667</td><td>$141.03</td><td>550,000</td><td>$846.15</td></tr><tr><td>4</td><td>96,667</td><td>$148.72</td><td>580,000</td><td>$892.31</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>101,667</td><td>$156.41</td><td>610,000</td><td>$938.46</td></tr><tr><td>6</td><td>106,667</td><td>$164.10</td><td>640,000</td><td>$984.62</td></tr><tr><td>7</td><td>113,333</td><td>$174.36</td><td>680,000</td><td>$1,046.15</td></tr><tr><td>8</td><td>120,000</td><td>$184.62</td><td>720,000</td><td>$1,107.69</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>130,000</td><td>$200.00</td><td>780,000</td><td>$1,200.00</td></tr><tr><td>10</td><td>140,000</td><td>$215.38</td><td>840,000</td><td>$1,292.31</td></tr><tr><td>11</td><td>150,000</td><td>$230.77</td><td>900,000</td><td>$1,384.62</td></tr><tr><td>12</td><td>156,667</td><td>$241.03</td><td>940,000</td><td>$1,446.15</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e3v6" onclick="tablaMove('e3v6',-1)">❮</div>
+          <div class="tabla-dots" id="td-e3v6"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e3v6" onclick="tablaMove('e3v6',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
-      <!-- V 5 días -->
       <div class="semanas-bloque" id="e3v5">
-        <p class="bloque-header">Semanas 1 – 4</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>1</td><td>98,000</td><td>$150.77</td><td>490,000</td><td>$753.85</td></tr>
-          <tr><td>2</td><td>104,000</td><td>$160.00</td><td>520,000</td><td>$800.00</td></tr>
-          <tr><td>3</td><td>110,000</td><td>$169.23</td><td>550,000</td><td>$846.15</td></tr>
-          <tr><td>4</td><td>116,000</td><td>$178.46</td><td>580,000</td><td>$892.31</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 5 – 8</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>5</td><td>122,000</td><td>$187.69</td><td>610,000</td><td>$938.46</td></tr>
-          <tr><td>6</td><td>128,000</td><td>$196.92</td><td>640,000</td><td>$984.62</td></tr>
-          <tr><td>7</td><td>136,000</td><td>$209.23</td><td>680,000</td><td>$1,046.15</td></tr>
-          <tr><td>8</td><td>144,000</td><td>$221.54</td><td>720,000</td><td>$1,107.69</td></tr>
-        </tbody></table></div>
-        <p class="bloque-header">Semanas 9 – 12</p>
-        <div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody>
-          <tr><td>9</td><td>156,000</td><td>$240.00</td><td>780,000</td><td>$1,200.00</td></tr>
-          <tr><td>10</td><td>168,000</td><td>$258.46</td><td>840,000</td><td>$1,292.31</td></tr>
-          <tr><td>11</td><td>180,000</td><td>$276.92</td><td>900,000</td><td>$1,384.62</td></tr>
-          <tr><td>12</td><td>188,000</td><td>$289.23</td><td>940,000</td><td>$1,446.15</td></tr>
-        </tbody></table></div>
+        <div class="version-context"><strong>Decisión profesional.</strong> Dos días de descanso te permiten rendir al máximo en los 5 días que trabajas. Estás en la <strong>Etapa 3</strong>: este es el nivel más alto del reto. Cada meta que alcanzas aquí representa lo mejor de ti.</div>
+        <div class="tabla-slider" id="ts-e3v5"><div class="tabla-track" id="tt-e3v5"><div class="tabla-slide"><p class="bloque-header">Semanas 1–4</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>1</td><td>98,000</td><td>$150.77</td><td>490,000</td><td>$753.85</td></tr><tr><td>2</td><td>104,000</td><td>$160.00</td><td>520,000</td><td>$800.00</td></tr><tr><td>3</td><td>110,000</td><td>$169.23</td><td>550,000</td><td>$846.15</td></tr><tr><td>4</td><td>116,000</td><td>$178.46</td><td>580,000</td><td>$892.31</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 5–8</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>5</td><td>122,000</td><td>$187.69</td><td>610,000</td><td>$938.46</td></tr><tr><td>6</td><td>128,000</td><td>$196.92</td><td>640,000</td><td>$984.62</td></tr><tr><td>7</td><td>136,000</td><td>$209.23</td><td>680,000</td><td>$1,046.15</td></tr><tr><td>8</td><td>144,000</td><td>$221.54</td><td>720,000</td><td>$1,107.69</td></tr></tbody></table></div></div><div class="tabla-slide"><p class="bloque-header">Semanas 9–12</p><div class="tabla-wrap"><table class="bono-table"><thead><tr><th>Sem</th><th>Diario (mon)</th><th>Diario ($)</th><th>Semanal (mon)</th><th>Semanal ($)</th></tr></thead><tbody><tr><td>9</td><td>156,000</td><td>$240.00</td><td>780,000</td><td>$1,200.00</td></tr><tr><td>10</td><td>168,000</td><td>$258.46</td><td>840,000</td><td>$1,292.31</td></tr><tr><td>11</td><td>180,000</td><td>$276.92</td><td>900,000</td><td>$1,384.62</td></tr><tr><td>12</td><td>188,000</td><td>$289.23</td><td>940,000</td><td>$1,446.15</td></tr></tbody></table></div></div></div></div>
+        <div class="tabla-nav">
+          <div class="tabla-arrow" id="ta-prev-e3v5" onclick="tablaMove('e3v5',-1)">❮</div>
+          <div class="tabla-dots" id="td-e3v5"><div class="tabla-dot active"></div><div class="tabla-dot"></div><div class="tabla-dot"></div></div>
+          <div class="tabla-arrow" id="ta-next-e3v5" onclick="tablaMove('e3v5',1)">❯</div>
+        </div>
         <button class="btn-red" onclick="cerrarEtapa()">← Regresar al menú del reto</button>
       </div>
     </div>
-
-    </div><!-- /retoDetalle -->
-
-  </div><!-- /section-reto -->
+    </div>
+  </div>
 
 </div><!-- /mainContent -->
 
@@ -912,7 +809,61 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ── RETO FAIRY ──
+// ── MENSAJES DINÁMICOS POR ETAPA + VERSIÓN ──
+const VERSION_MSGS = {
+  '1-7': '<strong>¡Buena elección!</strong> Trabajar los 7 días seguidos beneficia directamente tu algoritmo — la app detecta actividad constante y te da mayor visibilidad. Recuerda que estás en la <strong>Etapa 1</strong>: el objetivo aquí no es ganar mucho de golpe, sino construir el hábito y aprender el ritmo del sistema.',
+  '1-6': 'Un día de descanso entre tu semana laboral es una elección inteligente. El cuerpo necesita recuperarse para rendir mejor. Lo importante es que sigas cumpliendo tus metas diarias y semanales. Estás en la <strong>Etapa 1</strong>: construye constancia y no pierdas el ritmo que estás estableciendo.',
+  '1-5': 'Dos días de descanso te dan más flexibilidad en tu semana. Es una opción válida si tienes otras responsabilidades. Lo clave es compensar con mayor rendimiento en tus días activos. Estás en la <strong>Etapa 1</strong>: es tu momento de aprender cómo funciona el sistema — no lo desaproveches.',
+  '2-7': '<strong>¡Excelente decisión!</strong> En la Etapa 2 la constancia diaria se vuelve aún más importante. Trabajar los 7 días mantiene tu algoritmo estable y te posiciona mejor en los rankings semanales. Estás en la <strong>Etapa 2</strong>: ya construiste la base — ahora el enfoque es estabilidad y crecimiento sostenido.',
+  '2-6': 'Un día libre bien planificado no afecta tu progreso si cumples tus metas en los días activos. En esta etapa ya conoces el sistema — úsalo a tu favor. Estás en la <strong>Etapa 2</strong>: el objetivo es mantener y aumentar tu nivel semana a semana de forma constante.',
+  '2-5': 'Dos días de descanso en la Etapa 2 requieren mayor enfoque en tus días de trabajo para alcanzar las metas semanales. Si eliges esta versión, asegúrate de no bajar el rendimiento en tus días activos. Estás en la <strong>Etapa 2</strong>: cada semana cuenta para consolidar tu posición en el algoritmo.',
+  '3-7': '<strong>¡La élite trabaja así!</strong> Siete días de actividad en la Etapa 3 te pone en una posición privilegiada dentro de la app. El algoritmo te reconocerá como una streamer de alto rendimiento. Estás en la <strong>Etapa 3</strong>: aquí se consolida todo lo que construiste — es el nivel más alto del reto.',
+  '3-6': 'Un día de descanso en la Etapa 3 es totalmente viable si has mantenido constancia hasta aquí. Ya tienes el ritmo dominado. Estás en la <strong>Etapa 3</strong>: las metas son más exigentes, pero también son el reflejo de todo el crecimiento que lograste desde la Etapa 1.',
+  '3-5': 'Dos días de descanso en la Etapa 3 significan que tus días activos deben ser de alto rendimiento. No hay margen para días flojos. Estás en la <strong>Etapa 3</strong>: llegaste al nivel más avanzado del reto — mantén el estándar que te trajo hasta aquí.'
+};
+
+function mostrarMensajeVersion(etapa, dias) {
+  const key = `${etapa}-${dias}`;
+  const el = document.getElementById(`msg-e${etapa}`);
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = VERSION_MSGS[key] || '';
+    el.style.opacity = '1';
+  }, 150);
+}
+
+
+const tablaIdx = {};
+
+function tablaMove(id, dir) {
+  if (tablaIdx[id] === undefined) tablaIdx[id] = 0;
+  const track = document.getElementById('tt-' + id);
+  if (!track) return;
+  const total = track.children.length;
+  let next = tablaIdx[id] + dir;
+  if (next < 0 || next >= total) return;
+  tablaIdx[id] = next;
+  track.style.transform = `translateX(-${next * 100}%)`;
+  const dots = document.querySelectorAll(`#td-${id} .tabla-dot`);
+  dots.forEach((d, i) => d.classList.toggle('active', i === next));
+  parpadearTablaFlechas(id);
+}
+
+function resetTablaSlider(id) {
+  tablaIdx[id] = 0;
+  const track = document.getElementById('tt-' + id);
+  if (track) {
+    track.style.transition = 'none';
+    track.style.transform = 'translateX(0)';
+    setTimeout(() => { track.style.transition = ''; }, 50);
+  }
+  const dots = document.querySelectorAll(`#td-${id} .tabla-dot`);
+  dots.forEach((d, i) => d.classList.toggle('active', i === 0));
+  setTimeout(() => parpadearTablaFlechas(id), 100);
+}
+
+
 const ETAPA_INFO = {
   1: { titulo: 'Etapa 1 — Base',           desc: 'Las primeras 12 semanas del Reto Fairy. El enfoque es construir constancia y establecer una base sólida de ingresos.' },
   2: { titulo: 'Etapa 2 — Estabilidad',    desc: 'Las siguientes 12 semanas. El objetivo es estabilidad y aumento sostenido del rendimiento.' },
@@ -930,6 +881,10 @@ function abrirEtapa(n) {
   document.querySelectorAll('.etapa-detalle').forEach(d => d.classList.remove('active'));
   document.getElementById('detalle-e' + n).classList.add('active');
   document.getElementById('retoDetalle').scrollTop = 0;
+  setTimeout(() => {
+    resetTablaSlider(`e${n}v7`);
+    mostrarMensajeVersion(n, 7);
+  }, 50);
 }
 
 function cerrarEtapa() {
@@ -940,16 +895,16 @@ function cerrarEtapa() {
 }
 
 function verVersion(etapa, dias) {
-  const prefijo = `e${etapa}v${dias}`;
-  // Ocultar todos los bloques de esta etapa
   [7,6,5].forEach(d => {
     const bl = document.getElementById(`e${etapa}v${d}`);
     if (bl) bl.classList.remove('active');
     const vt = document.getElementById(`v${etapa}-${d}`);
     if (vt) vt.classList.remove('active');
   });
-  document.getElementById(prefijo).classList.add('active');
+  const activeId = `e${etapa}v${dias}`;
+  document.getElementById(activeId).classList.add('active');
   document.getElementById(`v${etapa}-${dias}`).classList.add('active');
+  resetTablaSlider(activeId);
 }
 
 </script>
