@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fairy Agency — Campus</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+
+
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#050505;
+  color:#fff;
+  overflow:hidden;
+  width:100vw;
+  height:100vh;
+}
+
+.slider-container{
+  width:100vw; height:100vh; overflow:hidden;
+  position:relative;
+}
+
+.slides-track{
+  display:flex; height:100%; width:100%;
+  transition:transform .55s cubic-bezier(.22,1,.36,1);
+  will-change:transform;
+}
+
+.slide{
+  min-width:100vw; width:100vw; height:100vh;
+  flex-shrink:0;
+  display:flex; align-items:center;
+  justify-content:center; padding:20px;
+}
+
+.card{
+  width:100%; max-width:430px;
+  height:auto; max-height:88vh;
+  overflow-y:auto;
+  background:#101010;
+  border:1px solid #242424;
+  border-radius:28px;
+  padding:34px 24px;
+  display:flex; flex-direction:column;
+  gap:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.75);
+}
+.card::-webkit-scrollbar{ width:0; }
+
+/* TAP CHAIN */
+.tap-chain {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 6px; width: 100%;
+}
+.tap-step-wrap {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 4px; width: 100%;
+}
+.tap-label {
+  font-size: 10px; font-weight: 700;
+  color: #ffd700; letter-spacing: 1px;
+  text-transform: uppercase; align-self: flex-start;
+  padding-left: 4px;
+}
+.tap-btn {
+  width: 100%; background: #1d1d1d;
+  border: 1px solid #343434; border-radius: 14px;
+  padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 14px; font-weight: 700; color: #fff;
+}
+.tap-btn i { color: #ffd700; font-size: 18px; }
+.tap-salsa-sq {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: #ffd700; color: #000;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 17px; flex-shrink: 0;
+}
+.tap-btn-text { font-size: 14px; font-weight: 700; }
+.tap-btn-gold {
+  background: linear-gradient(90deg,#ffd700,#ff9900);
+  color: #000; border: none; font-size: 14px;
+  font-weight: 800; justify-content: center;
+  font-family: 'Inter', sans-serif;
+}
+.tap-arrow {
+  font-size: 20px; color: #ffd700; line-height: 1;
+}
+
+
+.step-chain {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.step-chain-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.step-chip {
+  background: #1d1d1d;
+  border: 1px solid #343434;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex: 1;
+}
+.step-chip i { color: #ffd700; font-size: 16px; }
+.step-chip .salsa-sq {
+  width: 28px; height: 28px;
+  background: #ffd700; color: #000;
+  border-radius: 8px; display: flex;
+  align-items: center; justify-content: center;
+  font-weight: 900; font-size: 15px;
+  flex-shrink: 0;
+}
+.step-chip .step-sub {
+  font-size: 11px; color: #888; font-weight: 500;
+}
+.step-connector {
+  display: flex;
+  justify-content: center;
+  padding-left: 20px;
+  color: #ffd700;
+  font-size: 16px;
+}
+.step-chip-btn {
+  background: linear-gradient(90deg,#ffd700,#ff9900);
+  border: none; border-radius: 12px;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 800; color: #000;
+  flex: 1; font-family: 'Inter', sans-serif;
+}
+
+
+.slide-number{
+  font-size:11px; font-weight:800;
+  letter-spacing:3px; color:#ffd700;
+  opacity:.7; text-transform:uppercase;
+}
+
+.card-icon{ font-size:36px; color:#ffd700; align-self:center; }
+
+.divider{
+  width:44px; height:2px;
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  border-radius:20px; align-self:center;
+}
+
+.card-text{ font-size:14px; line-height:1.8; color:#d0d0d0; }
+.card-text strong{ color:#ffd700; font-weight:700; }
+
+/* MENU GRID */
+.menu-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+}
+.menu-item{
+  background:#181818; border:1px solid #2b2b2b;
+  border-radius:16px; padding:16px 10px;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  gap:8px; min-height:88px;
+}
+.menu-item i{ font-size:22px; color:#ffd700; }
+.menu-item .salsa-letter{ font-size:24px; font-weight:900; color:#ffd700; }
+.menu-item span{ font-size:11px; font-weight:700; color:#d8d8d8; text-align:center; line-height:1.4; }
+
+/* HIGHLIGHT BOX */
+.highlight-box{
+  background:#131313; border:1px solid #2a2a2a;
+  border-left:3px solid #ffd700; border-radius:16px;
+  padding:16px; font-size:13px; line-height:1.7; color:#c9c9c9;
+}
+.highlight-box strong{ color:#ffd700; }
+
+/* EMPIEZA AQUÍ REAL */
+.real-start-box{
+  background:#151515; border:1px solid #2a2a2a;
+  border-radius:22px; padding:22px;
+  display:flex; flex-direction:column; gap:16px;
+}
+.real-start-header{ display:flex; align-items:center; gap:10px; }
+.real-start-header .salsa-icon{
+  width:42px; height:42px; border-radius:12px;
+  background:#ffd700; color:#000;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:20px;
+}
+.real-start-header div{ display:flex; flex-direction:column; }
+.real-start-header strong{ font-size:15px; color:#fff; }
+.real-start-header span{ font-size:12px; color:#8f8f8f; }
+.real-start-btn{
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  border:none; height:48px; border-radius:14px;
+  font-weight:800; font-size:14px; color:#000;
+  cursor:pointer; font-family:'Inter',sans-serif;
+}
+
+/* SECTION LIST */
+.section-list{ display:flex; flex-direction:column; gap:12px; }
+.section-card{
+  background:#181818; border:1px solid #2a2a2a;
+  border-radius:16px; padding:14px;
+  display:flex; gap:14px; align-items:flex-start;
+}
+.section-card i{ font-size:18px; color:#ffd700; margin-top:2px; }
+.section-card-content{ display:flex; flex-direction:column; gap:5px; }
+.section-card-content strong{ font-size:13px; color:#fff; }
+.section-card-content span{ font-size:12px; line-height:1.6; color:#bdbdbd; }
+
+/* PATH BOX */
+.path-box{
+  background:#131313; border:1px solid #2a2a2a;
+  border-radius:16px; padding:16px;
+  display:flex; flex-direction:column; gap:12px;
+}
+.path-title{
+  font-size:11px; letter-spacing:1px;
+  text-transform:uppercase; color:#7e7e7e; font-weight:700;
+}
+.path{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.path-step{
+  background:#1d1d1d; border:1px solid #343434;
+  border-radius:10px; padding:8px 12px;
+  font-size:12px; font-weight:700;
+  display:flex; align-items:center; gap:8px; color:#fff;
+}
+.path-step i{ color:#ffd700; font-size:12px; }
+.path-step .salsa-letter{ color:#ffd700; font-weight:900; }
+.path-arrow{ font-size:11px; color:#ffd700; }
+
+/* ARROWS */
+.arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  width:56px; height:56px; border-radius:50%;
+  background:rgba(0,0,0,.88);
+  border:1px solid rgba(255,215,0,.7);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; color:#ffd700; cursor:pointer; z-index:100;
+  transition:.25s;
+}
+.arrow.left{ left:12px; }
+.arrow.right{ right:12px; }
+.arrow:hover{ background:#151515; }
+
+.contador{
+  position:absolute; bottom:18px; left:50%; transform:translateX(-50%);
+  font-size:12px; font-weight:800; letter-spacing:2px; color:#ffd700;
+}
+
+.header-logo{ position:fixed; top:18px; left:50%; transform:translateX(-50%); z-index:100; }
+.header-logo img{ width:74px; opacity:.9; }
+
+/* BOTÓN INGRESO FINAL */
+.btn-ingresar{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  color:#000; padding:16px; border-radius:14px;
+  font-weight:800; font-size:15px; text-decoration:none;
+  font-family:'Inter',sans-serif;
+  animation:glowPulse 2s infinite;
+}
+@keyframes glowPulse{
+  0%{box-shadow:0 0 6px rgba(255,215,0,.4)}
+  50%{box-shadow:0 0 20px rgba(255,215,0,.7)}
+  100%{box-shadow:0 0 6px rgba(255,215,0,.4)}
+}
+</style>
+</head>
+<body>
+
+<div class="header-logo">
+  <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png">
+</div>
+
+<div class="slider-container">
+
+  <div class="arrow left" id="btnPrev" onclick="mover(-1)">❮</div>
+  <div class="arrow right" id="btnNext" onclick="mover(1)">❯</div>
+
+  <div class="slides-track" id="slidesTrack">
+
+    <!-- SLIDE 01 — Qué es este onboarding -->
+    <div class="slide"><div class="card" style="align-items:center; text-align:center;">
+      <span class="slide-number">01 / 11</span>
+      <i class="fa-solid fa-map card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text" style="text-align:center;">Antes de ingresar al campus, lee este onboarding completo.</p>
+      <div class="highlight-box" style="text-align:left;">
+        Este onboarding es una <strong>guía de navegación</strong> que te explica dónde está cada cosa dentro del campus y cómo llegar a ella.<br><br>
+        Si lo lees antes de entrar, no te sentirás perdida al acceder. Al final encontrarás el botón para ingresar al campus.
+      </div>
+      <p class="card-text" style="text-align:center;">Desliza para continuar 👉</p>
+    </div></div>
+
+        <!-- SLIDE 02 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">02 / 11</span>
+      <i class="fa-solid fa-door-open card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Bienvenida al campus oficial de <strong>Fairy Agency</strong>.<br><br>Al ingresar encontrarás el <strong>menú principal</strong> junto al <strong>menú lateral</strong>, desde donde podrás navegar entre todas las herramientas, tutoriales y secciones disponibles.</p>
+      <div class="menu-grid">
+        <div class="menu-item"><i class="fa-solid fa-graduation-cap"></i><span>Fairy Academy</span></div>
+        <div class="menu-item"><div class="salsa-letter">S</div><span>SALSA</span></div>
+        <div class="menu-item"><i class="fa-solid fa-chart-column"></i><span>Reportes</span></div>
+        <div class="menu-item"><i class="fa-brands fa-bitcoin"></i><span>Binance</span></div>
+        <div class="menu-item"><i class="fa-solid fa-newspaper"></i><span>Noticias</span></div>
+        <div class="menu-item"><i class="fa-solid fa-scroll"></i><span>Reglamento</span></div>
+      </div>
+    </div></div>
+
+    <!-- SLIDE 02 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">03 / 11</span>
+      <i class="fa-solid fa-file-shield card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Las primeras secciones que debes explorar son <strong>Reglamento</strong> y <strong>Reportes</strong>, ya que ambas son necesarias antes de comenzar tus actividades dentro de la agencia.</p>
+      <div class="section-list">
+        <div class="section-card">
+          <i class="fa-solid fa-scroll"></i>
+          <div class="section-card-content">
+            <strong>Reglamento</strong>
+            <span>Todas las reglas internas de Fairy Agency. Léelas cuidadosamente para entender cómo funciona nuestra área laboral y mantener una buena convivencia dentro de la agencia.</span>
+          </div>
+        </div>
+        <div class="section-card">
+          <i class="fa-solid fa-chart-column"></i>
+          <div class="section-card-content">
+            <strong>Reportes</strong>
+            <span>Aquí completarás tu verificación una única vez y posteriormente llenarás tu reporte diario para recibir coaching personalizado basado en tu progreso.</span>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- SLIDE 04 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">04 / 11</span>
+      <div class="divider"></div>
+      <p class="card-text">Si eres nueva en SALSA, tu punto de inicio es <strong>Empieza aquí</strong>. Para llegar:</p>
+
+      <div class="path-box">
+        <div class="path-title">Sigue estos pasos</div>
+        <div class="path">
+          <div class="path-step"><span class="salsa-letter">S</span> SALSA</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-compass"></i> Empieza aquí</div>
+        </div>
+      </div>
+
+      <div class="bloque-empieza-demo">
+        <div class="bloque-empieza-top">
+          <div class="bloque-empieza-texts">
+            <strong>Empieza aquí</strong>
+            <span>Aprende cómo usar SALSA paso a paso</span>
+          </div>
+        </div>
+        <div class="btn-comenzar-demo">COMENZAR</div>
+      </div>
+
+      <p class="card-text">Ahí aprenderás sobre las <strong>horas de corte</strong>, el <strong>reloj Salsa</strong> y cómo navegar correctamente dentro de la aplicación.</p>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">05 / 11</span>
+      <div class="divider"></div>
+      <p class="card-text">Dentro de <strong>Empieza aquí</strong> encontrarás secciones importantes para entender SALSA desde tus primeros días.</p>
+      <div class="section-list">
+        <div class="section-card">
+          <i class="fa-solid fa-user"></i>
+          <div class="section-card-content">
+            <strong>Centro Streamer</strong>
+            <span>Aprende cómo interpretar tus métricas, ganancias, gráficas y rendimiento dentro de SALSA.</span>
+          </div>
+        </div>
+        <div class="section-card">
+          <i class="fa-solid fa-image"></i>
+          <div class="section-card-content">
+            <strong>Perfil</strong>
+            <span>Aprende cómo optimizar correctamente tu perfil para mejorar tu imagen y aumentar tus oportunidades dentro de la plataforma.</span>
+          </div>
+        </div>
+        <div class="section-card">
+          <i class="fa-solid fa-coins"></i>
+          <div class="section-card-content">
+            <strong>Monedas y Reto Fairy</strong>
+            <span>Aprende cómo funciona el sistema de monedas y el Reto Fairy con metas progresivas diseñadas para ayudarte a crecer constantemente.</span>
+          </div>
+        </div>
+        <div class="section-card">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <div class="section-card-content">
+            <strong>Advertencias</strong>
+            <span>Aprende sobre riesgos, usuarios problemáticos y situaciones importantes para desenvolverte de forma más segura dentro de SALSA.</span>
+          </div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">06 / 11</span>
+      <i class="fa-solid fa-circle-play card-icon"></i>
+      <div class="divider"></div>
+      <div class="path-box">
+        <div class="path-title">Dirígete a</div>
+        <div class="path">
+          <div class="path-step"><span class="salsa-letter">S</span> SALSA</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-circle-play"></i> Tutoriales</div>
+        </div>
+      </div>
+      <p class="card-text">Dentro de Tutoriales encontrarás guías paso a paso para las áreas más importantes dentro de SALSA.</p>
+      <div class="menu-grid">
+        <div class="menu-item"><i class="fa-solid fa-heart"></i><span>Match</span></div>
+        <div class="menu-item"><i class="fa-solid fa-video"></i><span>Zona Live</span></div>
+        <div class="menu-item"><i class="fa-solid fa-phone"></i><span>Videollamadas</span></div>
+        <div class="menu-item"><i class="fa-solid fa-coins"></i><span>Pagos</span></div>
+        <div class="menu-item"><i class="fa-solid fa-chart-line"></i><span>Estrategia</span></div>
+      </div>
+      <div class="highlight-box">Es importante explorar todas estas secciones ya que cada área dentro de SALSA funciona de manera distinta y requiere entenderla correctamente.</div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">07 / 11</span>
+      <i class="fa-solid fa-building-columns card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Si vives en <strong>México, Colombia, Chile, Brasil o Egipto</strong> puedes vincular directamente tu cuenta bancaria dentro de SALSA.</p>
+      <div class="path-box">
+        <div class="path-title">Ruta</div>
+        <div class="path">
+          <div class="path-step"><span class="salsa-letter">S</span> SALSA</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-circle-play"></i> Tutoriales</div>
+        </div>
+        <div class="path">
+          <div class="path-step"><i class="fa-solid fa-coins"></i> Pagos</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-building-columns"></i> Cuenta Bancaria</div>
+        </div>
+      </div>
+      <div class="highlight-box">Aquí encontrarás el paso a paso para agregar correctamente tu método de pago dentro de SALSA.</div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">08 / 11</span>
+      <i class="fa-solid fa-hand-holding-dollar card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Si vives en <strong>Estados Unidos</strong>, otro país de habla inglesa, o tienes problemas para agregar tu método de pago mediante criptobilletera, puedes utilizar el método de <strong>Pago Manual</strong>.</p>
+      <div class="path-box">
+        <div class="path-title">Ruta</div>
+        <div class="path">
+          <div class="path-step"><span class="salsa-letter">S</span> SALSA</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-circle-play"></i> Tutoriales</div>
+        </div>
+        <div class="path">
+          <div class="path-step"><i class="fa-solid fa-coins"></i> Pagos</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-hand-holding-dollar"></i> Pago Manual</div>
+        </div>
+      </div>
+      <div class="highlight-box">Aquí encontrarás el proceso para configurar correctamente tu método de pago manual dentro de SALSA.</div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">09 / 11</span>
+      <i class="fa-brands fa-bitcoin card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Si vives en cualquier otro país, primero deberás crear una cuenta de <strong>Binance</strong>.</p>
+      <div class="menu-grid">
+        <div class="menu-item"><i class="fa-brands fa-bitcoin"></i><span>Binance</span></div>
+      </div>
+      <div class="highlight-box">Aquí aprenderás cómo crear tu cuenta, verificar tu identidad, agregar métodos de pago, utilizar comercio P2P y configurar tu billetera.</div>
+      <p class="card-text">Una vez creada tu cuenta de Binance podrás vincularla en:</p>
+      <div class="path-box">
+        <div class="path">
+          <div class="path-step"><span class="salsa-letter">S</span> SALSA</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-solid fa-circle-play"></i> Tutoriales</div>
+        </div>
+        <div class="path">
+          <div class="path-step"><i class="fa-solid fa-coins"></i> Pagos</div>
+          <div class="path-arrow">›</div>
+          <div class="path-step"><i class="fa-brands fa-bitcoin"></i> Criptobilletera</div>
+        </div>
+      </div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card">
+      <span class="slide-number">10 / 11</span>
+      <i class="fa-solid fa-graduation-cap card-icon"></i>
+      <div class="divider"></div>
+      <p class="card-text">Finalmente, dentro del menú principal también encontrarás:</p>
+      <div class="menu-grid">
+        <div class="menu-item"><i class="fa-solid fa-newspaper"></i><span>Noticias</span></div>
+        <div class="menu-item"><i class="fa-solid fa-graduation-cap"></i><span>Fairy Academy</span></div>
+      </div>
+      <div class="highlight-box">
+        <strong>Noticias:</strong> Mantente al día con información importante, novedades y anuncios de SALSA y Fairy Agency.<br><br>
+        <strong>Fairy Academy:</strong> Centro de formación oficial. Actualmente encontrarás <strong>Tips Fairy</strong> con tips rápidos y contenido express. Las secciones de Capacitaciones y Tutoriales se irán ampliando progresivamente.
+      </div>
+    </div></div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide"><div class="card" style="align-items:center; text-align:center;">
+      <span class="slide-number">11 / 11</span>
+      <img src="https://i.postimg.cc/fLhtVJy2/1774069732194.png" style="width:120px; align-self:center;">
+      <div class="divider"></div>
+      <p class="card-text" style="text-align:center;">El campus está disponible las <strong>24 horas</strong>, los 7 días de la semana.<br><br>El campus te enseña a manejar correctamente cada herramienta de SALSA. Cada sección está dedicada a una parte específica de la aplicación para que aprendas a utilizarla paso a paso. Podrás volver las veces que necesites.<br><br>Para ingresar únicamente deberás colocar tu <strong>ID de SALSA</strong>. Si la sesión se cierra automáticamente es completamente normal.</p>
+      <a href="zona-streamer.html" class="btn-ingresar">
+        <i class="fa-solid fa-door-open"></i> Ingresar al campus
+      </a>
+    </div></div>
+
+  </div>
+
+  <div class="contador" id="contador">1 / 11</div>
+
+</div>
+
+<script>
+const TOTAL = 11;
+let index = 0;
+let animando = false;
+let touchStartX = 0;
+
+let moveTimer = null;
+
+function mover(dir) {
+  const next = index + dir;
+  if (next < 0 || next >= TOTAL) return;
+  index = next;
+  const track = document.getElementById('slidesTrack');
+  // Fast mode: no transition if clicking rapidly
+  if (moveTimer) {
+    track.style.transition = 'none';
+  } else {
+    track.style.transition = 'transform .55s cubic-bezier(.22,1,.36,1)';
+  }
+  track.style.transform = `translateX(-${index * 100}vw)`;
+  document.getElementById('contador').innerText = `${index + 1} / ${TOTAL}`;
+  document.getElementById('btnPrev').style.opacity = index === 0 ? '0.2' : '1';
+  document.getElementById('btnNext').style.opacity = index === TOTAL - 1 ? '0.2' : '1';
+  // Reset transition after move
+  clearTimeout(moveTimer);
+  moveTimer = setTimeout(() => {
+    track.style.transition = 'transform .55s cubic-bezier(.22,1,.36,1)';
+    moveTimer = null;
+  }, 300);
+}
+
+document.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) mover(diff > 0 ? 1 : -1);
+}, { passive: true });
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') mover(1);
+  if (e.key === 'ArrowLeft') mover(-1);
+});
+
+document.getElementById('btnPrev').style.opacity = '0.2';
+</script>
+
+</body>
+</html>
